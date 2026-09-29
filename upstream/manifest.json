@@ -1,0 +1,112 @@
+[
+  {
+    "path": "upstream\\3c1441bc8567bebd810046a03593c3b421bf08d7.json",
+    "url": "https://api.github.com/repos/liujiny/mame2003-plus-libretro-ps3/commits/3c1441bc8567bebd810046a03593c3b421bf08d7",
+    "sha256": "ec5c9f8074656876f4c3122676e8a30846e9a3a6d3a48e4e736366cc31493fa1"
+  },
+  {
+    "path": "upstream\\3c1441bc8567bebd810046a03593c3b421bf08d7.patch",
+    "url": "https://github.com/liujiny/mame2003-plus-libretro-ps3/commit/3c1441bc8567bebd810046a03593c3b421bf08d7.patch",
+    "sha256": "0527068dddfc925df7d338aac23793812dd447174c747dd40890818555c6a13a"
+  },
+  {
+    "path": "upstream\\938c448045d8eeec992d5036cfff687412850da1.json",
+    "url": "https://api.github.com/repos/liujiny/mame2003-plus-libretro-ps3/commits/938c448045d8eeec992d5036cfff687412850da1",
+    "sha256": "55f01c31d777b9e567421e294e7e16a51f430636b4b49d23fe86c821fa5c3ead"
+  },
+  {
+    "path": "upstream\\938c448045d8eeec992d5036cfff687412850da1.patch",
+    "url": "https://github.com/liujiny/mame2003-plus-libretro-ps3/commit/938c448045d8eeec992d5036cfff687412850da1.patch",
+    "sha256": "38f118a36ddb6a238f24befdba6842172c3d2d861ab89a76deeaf855b325cc27"
+  },
+  {
+    "path": "upstream\\snapshot\\docs\\PS3_RAIDEN2_PACKED_TILEMAP_FIX.md",
+    "url": "https://raw.githubusercontent.com/liujiny/mame2003-plus-libretro-ps3/938c448045d8eeec992d5036cfff687412850da1/docs/PS3_RAIDEN2_PACKED_TILEMAP_FIX.md",
+    "sha256": "d99a29360a3656eafa8a1c706c95ec057aefb000069c2751af91f8fadd9a0269"
+  },
+  {
+    "path": "upstream\\snapshot\\docs\\PS3_RAIDEN2_SPRITE_FIX.md",
+    "url": "https://raw.githubusercontent.com/liujiny/mame2003-plus-libretro-ps3/938c448045d8eeec992d5036cfff687412850da1/docs/PS3_RAIDEN2_SPRITE_FIX.md",
+    "sha256": "81157a8508403f7efffd3ae13e97a9f8e4e36db57e74410bfde6d0e99a66907c"
+  },
+  {
+    "path": "upstream\\snapshot\\src\\drawgfx.c",
+    "url": "https://raw.githubusercontent.com/liujiny/mame2003-plus-libretro-ps3/938c448045d8eeec992d5036cfff687412850da1/src/drawgfx.c",
+    "sha256": "f09531559e99f51543d7ce38ef772d266dc60db0027b3456e9b9eb3b05b3685e"
+  },
+  {
+    "path": "upstream\\snapshot\\src\\driver.h",
+    "url": "https://raw.githubusercontent.com/liujiny/mame2003-plus-libretro-ps3/938c448045d8eeec992d5036cfff687412850da1/src/driver.h",
+    "sha256": "0689b61dc5e83041edd8955586cb3d3115200eec70b91eee8e653843775bd06d"
+  },
+  {
+    "path": "upstream\\snapshot\\src\\drivers\\raiden2.c",
+    "url": "https://raw.githubusercontent.com/liujiny/mame2003-plus-libretro-ps3/938c448045d8eeec992d5036cfff687412850da1/src/drivers/raiden2.c",
+    "sha256": "e34e15c0c013c5555413aa768a546d6084962e6acf571ec0d01e1c347bf21261"
+  },
+  {
+    "path": "upstream\\snapshot\\src\\drivers\\raiden2_cop.inc",
+    "url": "https://raw.githubusercontent.com/liujiny/mame2003-plus-libretro-ps3/938c448045d8eeec992d5036cfff687412850da1/src/drivers/raiden2_cop.inc",
+    "sha256": "3907973c51db9c696762905b4368248752763df6c4a02aed6526320f43b5efcf"
+  },
+  {
+    "path": "upstream\\snapshot\\src\\drivers\\raiden2_debug.h",
+    "url": "https://raw.githubusercontent.com/liujiny/mame2003-plus-libretro-ps3/938c448045d8eeec992d5036cfff687412850da1/src/drivers/raiden2_debug.h",
+    "sha256": "02b870e28a1c4951b14c6b12aef8e8b614ae517c232a288516a095915baf6d23"
+  },
+  {
+    "path": "upstream\\snapshot\\src\\drivers\\raiden2_debug.inc",
+    "url": "https://raw.githubusercontent.com/liujiny/mame2003-plus-libretro-ps3/938c448045d8eeec992d5036cfff687412850da1/src/drivers/raiden2_debug.inc",
+    "sha256": "a2d15779f296dfd52c18cf463e3b4f36711df7099f7821a659265a3c05f12199"
+  },
+  {
+    "path": "upstream\\snapshot\\src\\drivers\\raiden2_diag_api.h",
+    "url": "https://raw.githubusercontent.com/liujiny/mame2003-plus-libretro-ps3/938c448045d8eeec992d5036cfff687412850da1/src/drivers/raiden2_diag_api.h",
+    "sha256": "02b864e9002928b36c68e68de134cb464fdcd5217a1166374e946adc0011c40a"
+  },
+  {
+    "path": "upstream\\snapshot\\src\\drivers\\raiden2_r2crypt.inc",
+    "url": "https://raw.githubusercontent.com/liujiny/mame2003-plus-libretro-ps3/938c448045d8eeec992d5036cfff687412850da1/src/drivers/raiden2_r2crypt.inc",
+    "sha256": "d5efd17b783497ea43561204f4e312d98447fc9988c2e23c75f3ab35a181d751"
+  },
+  {
+    "path": "upstream\\snapshot\\src\\drivers\\raiden2_sound.inc",
+    "url": "https://raw.githubusercontent.com/liujiny/mame2003-plus-libretro-ps3/938c448045d8eeec992d5036cfff687412850da1/src/drivers/raiden2_sound.inc",
+    "sha256": "fd5ad569a0b79d1206c7a63c9ab82df8c79519388b9ae864df8f2adf994fe4c5"
+  },
+  {
+    "path": "upstream\\snapshot\\src\\sndhrdw\\seibu.c",
+    "url": "https://raw.githubusercontent.com/liujiny/mame2003-plus-libretro-ps3/938c448045d8eeec992d5036cfff687412850da1/src/sndhrdw/seibu.c",
+    "sha256": "5a1e9c8251465106c20e5662e42f7b30797d343cbbf215644469da6d96c60233"
+  },
+  {
+    "path": "upstream\\snapshot\\src\\sndhrdw\\seibu.h",
+    "url": "https://raw.githubusercontent.com/liujiny/mame2003-plus-libretro-ps3/938c448045d8eeec992d5036cfff687412850da1/src/sndhrdw/seibu.h",
+    "sha256": "3f5cbe0861f3ab632106db657a58cabce78d0f42aa4045b42f9becb41d8738a1"
+  },
+  {
+    "path": "upstream\\snapshot\\src\\tilemap.c",
+    "url": "https://raw.githubusercontent.com/liujiny/mame2003-plus-libretro-ps3/938c448045d8eeec992d5036cfff687412850da1/src/tilemap.c",
+    "sha256": "077bc3c86eb4d9c17e2fcd6b90b979eeae0a4d8dfd5fa4b15d78b30d2d33e9be"
+  },
+  {
+    "path": "upstream\\snapshot\\tools\\replay_raiden2.c",
+    "url": "https://raw.githubusercontent.com/liujiny/mame2003-plus-libretro-ps3/938c448045d8eeec992d5036cfff687412850da1/tools/replay_raiden2.c",
+    "sha256": "9353c2c64e6843f85aea56c53a5d3758a267e28ae1583a072ea78e7aefc8dca1"
+  },
+  {
+    "path": "upstream\\snapshot\\tools\\test_packed_tilemap.py",
+    "url": "https://raw.githubusercontent.com/liujiny/mame2003-plus-libretro-ps3/938c448045d8eeec992d5036cfff687412850da1/tools/test_packed_tilemap.py",
+    "sha256": "1d41d857f90aea2a4f9a70cf77f92a4803402b7af831b47c2e7fa6d9f28da494"
+  },
+  {
+    "path": "upstream\\snapshot\\tools\\test_raiden2_sprites.py",
+    "url": "https://raw.githubusercontent.com/liujiny/mame2003-plus-libretro-ps3/938c448045d8eeec992d5036cfff687412850da1/tools/test_raiden2_sprites.py",
+    "sha256": "146b3c1c6cf0b140a69b6dffec53ce7b2472dd208d6b0752c244b70ca044f076"
+  },
+  {
+    "path": "upstream\\snapshot\\tools\\unpack_retro_state.py",
+    "url": "https://raw.githubusercontent.com/liujiny/mame2003-plus-libretro-ps3/938c448045d8eeec992d5036cfff687412850da1/tools/unpack_retro_state.py",
+    "sha256": "78b4e56f4a3d3a26a97a41c134773b464d346b39defbb84582e53cc6d9f3dd5e"
+  }
+]

@@ -1,0 +1,20 @@
+# Build outputs and distributable binaries
+/build/
+/dist/
+*.xbe
+*.obj
+*.pdb
+*.ilk
+*.pch
+*.ncb
+*.suo
+*.opt
+*.plg
+Thumbs.db
+
+# Local archives and editor backups
+/MAMEoXtras 2026 Src.zip
+*.bak
+*.old
+__pycache__/
+*.py[cod]

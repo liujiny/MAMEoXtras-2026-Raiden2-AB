@@ -1,0 +1,13 @@
+; Raiden II parent set, OG Xbox optimized backport, 2026-09-24.
+; Add/replace this one record in the COMPLETE vm.txt beside MAMEoX.xbe.
+; Initial recommendation for a 64 MiB Xbox; not hardware benchmarked.
+; NAME THRESHOLD_MB COMMIT_64KiB DISTRIBUTE_MASK
+raiden2 4 16 65535
+;
+; If loading succeeds but disk paging is excessive, try this INSTEAD:
+; raiden2 4 32 65535
+; If physical memory runs out during loading, try this INSTEAD:
+; raiden2 4 8 65535
+; Keep only ONE active raiden2 record. First matching record wins.
+; Turn ForceVMM OFF to let vm.txt choose per-game settings.
+; These values target raiden2.zip only, not raiden.zip, Raiden DX or clones.

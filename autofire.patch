@@ -1,0 +1,336 @@
+--- a/MAME/src/inptport.c
++++ b/MAME/src/inptport.c
+@@ -13,6 +13,10 @@
+ #include <math.h>
+ #include "driver.h"
+ #include "config.h"
++
++#ifdef _XBOX
++#include "xbox_AutoFire.h"
++#endif
+ 
+ #ifdef MESS
+ #include "inputx.h"
+@@ -2167,6 +2171,10 @@
+ 		in++;
+ 	}
+ 
++#ifdef _XBOX
++    XboxAutoFireBeginFrame();
++#endif
++
+ 	ScanJoysticks( in ); /* populates mJoyCurrent[] */
+ 
+ 	/* scan all the input ports */
+@@ -2231,8 +2239,18 @@
+ 				else
+ 				{
+ 					InputSeq* seq;
++                    int pressed;
+ 					seq = input_port_seq(in, 0);
+-					if (seq_pressed(seq))
++#ifdef _XBOX
++                    /* Limit auto fire to digital game buttons. Menus, mapping,
++                       coin/start, directions and analog axes keep raw input. */
++                    XboxAutoFireSetGameInput(in->type >= IPT_BUTTON1 && in->type <= IPT_BUTTON10);
++#endif
++                    pressed = seq_pressed(seq);
++#ifdef _XBOX
++                    XboxAutoFireSetGameInput(0);
++#endif
++					if (pressed)
+ 					{
+ #ifdef MESS
+ 						if ((in->type == IPT_KEYBOARD) && osd_keyboard_disabled())
+--- /dev/null
++++ b/MAMEoX/Includes/AutoFireState.h
+@@ -0,0 +1,37 @@
++#ifndef AUTOFIRE_STATE_H
++#define AUTOFIRE_STATE_H
++
++/* Three frames down, three frames up: ten pulses/sec at 60 emulated FPS. */
++#define AUTOFIRE_DOWN_FRAMES 3
++#define AUTOFIRE_PERIOD_FRAMES 6
++
++typedef struct AutoFireState
++{
++    unsigned int phase;
++    int pressed;
++} AutoFireState;
++
++/* Called for every A/B button once per game input frame, even if unmapped. */
++static void AutoFireStep(AutoFireState *state, int held, int enabled)
++{
++    if (!held || !enabled)
++    {
++        state->phase = 0;
++        state->pressed = held != 0;
++        return;
++    }
++
++    state->pressed = state->phase < AUTOFIRE_DOWN_FRAMES;
++    state->phase = (state->phase + 1) % AUTOFIRE_PERIOD_FRAMES;
++}
++
++/* Reading input never advances the pulse. A new press always starts down. */
++static int AutoFireRead(const AutoFireState *state, int held,
++                        int enabled, int gameInput)
++{
++    if (!gameInput || !enabled)
++        return held != 0;
++    return held && state->pressed;
++}
++
++#endif
+--- /dev/null
++++ b/MAMEoX/Includes/xbox_AutoFire.h
+@@ -0,0 +1,26 @@
++#ifndef XBOX_AUTOFIRE_H
++#define XBOX_AUTOFIRE_H
++
++#define AUTOFIRE_PLAYERS 4
++#define AUTOFIRE_BUTTONS 2
++#define AUTOFIRE_A 0
++#define AUTOFIRE_B 1
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++/* Physical controller ports, independent of the game's button mapping. */
++extern int g_autoFireEnabled[AUTOFIRE_PLAYERS][AUTOFIRE_BUTTONS];
++
++/* Advance once per emulated input frame, including skipped video frames. */
++void XboxAutoFireBeginFrame(void);
++
++/* Only game button sequences may see auto fire. UI queries always see raw input. */
++void XboxAutoFireSetGameInput(int enabled);
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif
+--- a/MAMEoX/Sources/MAMEoXUtil.cpp
++++ b/MAMEoX/Sources/MAMEoXUtil.cpp
+@@ -19,6 +19,7 @@
+ #include "System_IniFile.h"
+ #include "xbox_Timing.h"
+ #include "xbox_JoystickMouse.h"
++#include "xbox_AutoFire.h"
+ #include "xbox_Direct3DRenderer.h"
+ #include "xbox_FileIO.h"
+ #include "xbox_Network.h"
+@@ -64,6 +65,8 @@
+ #pragma comment(linker, "/merge:STRT.D=STARTUP")
+ #pragma comment(linker, "/section:STARTUP,E,W,R")
+ */
++
++int g_autoFireEnabled[AUTOFIRE_PLAYERS][AUTOFIRE_BUTTONS] = {0};
+ 
+ ROMListOptions_t      g_romListOptions;
+ SkinOptions_t					g_skinOptions;
+@@ -289,6 +292,18 @@
+ 
+   g_FileIOConfig.MakeLower();
+ 
++  // Missing keys (including older INI files) mean auto fire is disabled.
++  for (UINT32 player = 0; player < AUTOFIRE_PLAYERS; ++player)
++  {
++    char key[32];
++    sprintf(key, "AutoFireP%uA", player + 1);
++    g_autoFireEnabled[player][AUTOFIRE_A] =
++        iniFile.GetProfileInt("Input", key, FALSE) != 0;
++    sprintf(key, "AutoFireP%uB", player + 1);
++    g_autoFireEnabled[player][AUTOFIRE_B] =
++        iniFile.GetProfileInt("Input", key, FALSE) != 0;
++  }
++
+     //-- Lightgun calibration -----------------------------------------------
+   g_calibrationData[0].m_xData[0] = iniFile.GetProfileInt( "Input", "Lightgun1_Left", -32767 );
+   g_calibrationData[0].m_xData[1] = iniFile.GetProfileInt( "Input", "Lightgun1_CenterX", 0 );
+@@ -457,6 +472,15 @@
+ 
+ 
+     //-- Lightgun calibration -----------------------------------------------
++  for (UINT32 player = 0; player < AUTOFIRE_PLAYERS; ++player)
++  {
++    char key[32];
++    sprintf(key, "AutoFireP%uA", player + 1);
++    iniFile.WriteProfileInt("Input", key, g_autoFireEnabled[player][AUTOFIRE_A] != 0);
++    sprintf(key, "AutoFireP%uB", player + 1);
++    iniFile.WriteProfileInt("Input", key, g_autoFireEnabled[player][AUTOFIRE_B] != 0);
++  }
++
+   iniFile.WriteProfileInt( "Input", "Lightgun1_Left", g_calibrationData[0].m_xData[0] );
+   iniFile.WriteProfileInt( "Input", "Lightgun1_CenterX", g_calibrationData[0].m_xData[1] );
+   iniFile.WriteProfileInt( "Input", "Lightgun1_Right", g_calibrationData[0].m_xData[2] );
+--- a/MAMEoX/Sources/xbox_JoystickMouse.c
++++ b/MAMEoX/Sources/xbox_JoystickMouse.c
+@@ -16,6 +16,8 @@
+ #include "inptport.h"
+ 
+ #include "xbox_JoystickMouse.h"
++#include "xbox_AutoFire.h"
++#include "AutoFireState.h"
+ #include "DebugLogger.h"
+ 
+ //= D E F I N E S ======================================================
+@@ -70,6 +72,30 @@
+ void InitializeJoystickMouse( void );
+ 
+ 
++static AutoFireState g_autoFireState[AUTOFIRE_PLAYERS][AUTOFIRE_BUTTONS] = {0};
++static int g_autoFireGameInput = 0;
++
++void XboxAutoFireBeginFrame(void)
++{
++    int player;
++    g_autoFireGameInput = 0;
++    for (player = 0; player < AUTOFIRE_PLAYERS; ++player)
++    {
++        const XINPUT_GAMEPAD *pad = GetGamepadState(player);
++        int heldA = pad && pad->bAnalogButtons[XINPUT_GAMEPAD_A] > ANALOG_BUTTON_AS_DIGITAL_DEADZONE;
++        int heldB = pad && pad->bAnalogButtons[XINPUT_GAMEPAD_B] > ANALOG_BUTTON_AS_DIGITAL_DEADZONE;
++        AutoFireStep(&g_autoFireState[player][AUTOFIRE_A], heldA,
++                     g_autoFireEnabled[player][AUTOFIRE_A]);
++        AutoFireStep(&g_autoFireState[player][AUTOFIRE_B], heldB,
++                     g_autoFireEnabled[player][AUTOFIRE_B]);
++    }
++}
++
++void XboxAutoFireSetGameInput(int enabled)
++{
++    g_autoFireGameInput = enabled;
++}
++
+ //= F U N C T I O N S ==================================================
+ 
+ 
+@@ -133,11 +159,15 @@
+ 			switch( joyindex )
+ 			{
+ 				case BUTTON_A:
+-					return (gamepad->bAnalogButtons[XINPUT_GAMEPAD_A] > ANALOG_BUTTON_AS_DIGITAL_DEADZONE);
++					return AutoFireRead(&g_autoFireState[joynum][AUTOFIRE_A],
++                        gamepad->bAnalogButtons[XINPUT_GAMEPAD_A] > ANALOG_BUTTON_AS_DIGITAL_DEADZONE,
++                        g_autoFireEnabled[joynum][AUTOFIRE_A], g_autoFireGameInput);
+ 				case BUTTON_X:
+ 					return (gamepad->bAnalogButtons[XINPUT_GAMEPAD_X] > ANALOG_BUTTON_AS_DIGITAL_DEADZONE);
+ 				case BUTTON_B:
+-					return (gamepad->bAnalogButtons[XINPUT_GAMEPAD_B] > ANALOG_BUTTON_AS_DIGITAL_DEADZONE);
++					return AutoFireRead(&g_autoFireState[joynum][AUTOFIRE_B],
++                        gamepad->bAnalogButtons[XINPUT_GAMEPAD_B] > ANALOG_BUTTON_AS_DIGITAL_DEADZONE,
++                        g_autoFireEnabled[joynum][AUTOFIRE_B], g_autoFireGameInput);
+ 				case BUTTON_Y:
+ 					return (gamepad->bAnalogButtons[XINPUT_GAMEPAD_Y] > ANALOG_BUTTON_AS_DIGITAL_DEADZONE);
+ 				case BUTTON_LEFT_TRIGGER:
+--- a/MAMEoXLauncher/Includes/OptionsScreen.h
++++ b/MAMEoXLauncher/Includes/OptionsScreen.h
+@@ -23,6 +23,7 @@
+ typedef enum PageID
+ {
+   OPTPAGE_GENERAL = 0x00,
++  OPTPAGE_AUTOFIRE,
+   OPTPAGE_SOUND,
+   OPTPAGE_VIDEO,
+   OPTPAGE_VECTOR,
+@@ -47,6 +48,7 @@
+ 
+ 
+ //= P R O T O T Y P E S ================================================
++void DrawAutoFirePage( COptionsScreen * );
+ void DrawGeneralPage( COptionsScreen * );
+ void DrawSoundPage( COptionsScreen * );
+ void DrawVideoPage( COptionsScreen * );
+@@ -57,6 +59,7 @@
+ void DrawROMListPage( COptionsScreen * );
+ void DrawVMMPage( COptionsScreen * );
+ 
++void ChangeAutoFirePage( COptionsScreen *, BOOL direction );
+ void ChangeGeneralPage( COptionsScreen *, BOOL direction );
+ void ChangeSoundPage( COptionsScreen *, BOOL direction );
+ void ChangeVideoPage( COptionsScreen *, BOOL direction );
+@@ -109,6 +112,7 @@
+ 		//------------------------------------------------------------
+ 	virtual void Draw( BOOL clearScreen = TRUE, BOOL flipOnCompletion = TRUE );
+ 
++  void DrawAutoFirePage( void );
+   void DrawGeneralPage( void );
+   void DrawSoundPage( void );
+   void DrawVideoPage( void );
+@@ -119,6 +123,7 @@
+   void DrawROMListPage( void );
+   void DrawVMMPage( void );
+ 
++  void ChangeAutoFirePage( BOOL direction );
+   void ChangeGeneralPage( BOOL direction );
+   void ChangeSoundPage( BOOL direction );
+   void ChangeVideoPage( BOOL direction );
+--- a/MAMEoXLauncher/Sources/OptionsScreen.cpp
++++ b/MAMEoXLauncher/Sources/OptionsScreen.cpp
+@@ -7,6 +7,7 @@
+ 
+ //= I N C L U D E S ====================================================
+ #include "OptionsScreen.h"
++#include "xbox_AutoFire.h"
+ #include "DebugLogger.h"
+ #include "XBFont.h"
+ #include "xbox_FileIO.h"
+@@ -90,6 +91,11 @@
+   //Ebs Skip Warnings
+   m_pageData[OPTPAGE_GENERAL].m_numItems = 7;
+ 
++  wcscpy( m_pageData[OPTPAGE_AUTOFIRE].m_title, L"Auto Fire Options (A/B)" );
++  m_pageData[OPTPAGE_AUTOFIRE].m_drawFunct = ::DrawAutoFirePage;
++  m_pageData[OPTPAGE_AUTOFIRE].m_changeFunct = ::ChangeAutoFirePage;
++  m_pageData[OPTPAGE_AUTOFIRE].m_numItems = AUTOFIRE_PLAYERS * AUTOFIRE_BUTTONS;
++
+   wcscpy( m_pageData[OPTPAGE_SOUND].m_title, L"Sound Options" );
+   m_pageData[OPTPAGE_SOUND].m_drawFunct = ::DrawSoundPage;
+   m_pageData[OPTPAGE_SOUND].m_changeFunct = ::ChangeSoundPage;
+@@ -379,6 +385,44 @@
+ //---------------------------------------------------------------------
+ //	DrawGeneralPage
+ //---------------------------------------------------------------------
++void COptionsScreen::DrawAutoFirePage( void )
++{
++  STARTPAGE();
++  for (UINT32 player = 0; player < AUTOFIRE_PLAYERS; ++player)
++  {
++    WCHAR name[64];
++    swprintf(name, L"P%u A button auto fire", player + 1);
++    DRAWITEM(name, g_autoFireEnabled[player][AUTOFIRE_A] ? L"Enabled" : L"Disabled");
++    swprintf(name, L"P%u B button auto fire", player + 1);
++    DRAWITEM(name, g_autoFireEnabled[player][AUTOFIRE_B] ? L"Enabled" : L"Disabled");
++  }
++  ENDPAGE();
++}
++
++void COptionsScreen::ChangeAutoFirePage( BOOL movingRight )
++{
++  UINT32 row = (UINT32)m_cursorPosition;
++  if (row < AUTOFIRE_PLAYERS * AUTOFIRE_BUTTONS)
++  {
++    int &enabled = g_autoFireEnabled[row / AUTOFIRE_BUTTONS][row % AUTOFIRE_BUTTONS];
++    if (enabled != (movingRight != FALSE))
++    {
++      enabled = movingRight != FALSE;
++      SaveOptions();
++    }
++  }
++}
++
++void DrawAutoFirePage( COptionsScreen *ptr )
++{
++  ptr->DrawAutoFirePage();
++}
++
++void ChangeAutoFirePage( COptionsScreen *ptr, BOOL movingRight )
++{
++  ptr->ChangeAutoFirePage(movingRight);
++}
++
+ void COptionsScreen::DrawGeneralPage( void )
+ {
+     WCHAR bios[256] = {0};

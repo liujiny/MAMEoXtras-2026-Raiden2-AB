@@ -1,0 +1,16 @@
+// List of resources to bundle.
+//
+// The output will be a header file (.h) used at compile time,
+// and a packed resource file (.xpr) used at runtime.
+
+out_header         ..\Includes\mox-icon.h
+out_packedresource ..\..\Media\mox-icon.xpr
+out_error          MAMEoXIcon.err
+out_prefix         mameoxicon
+
+Texture MAMEoXIcon
+{
+  Source        mox-icon.bmp
+  Format        D3DFMT_X8R8G8B8
+  Levels        1
+}

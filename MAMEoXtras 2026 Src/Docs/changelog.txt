@@ -1,0 +1,1849 @@
+Version 0.79.2b
+
+	Note: Henceforth I will not be providing a full file changelog (that's
+	      what CVS is for). Instead this doc will be used to track feature
+				changes/fixes and MAME core updates.
+
+   -------------------------------------------------------------
+  - \MAMEoX:
+    - MAMEoX.h
+      - Upped version number
+
+    - DebugLogger.h
+      - Changed PRINTMSG macro to be totally removed in retail
+        builds.
+
+  - \MAMEoXLauncher:
+    - main.cpp
+      - Added message while saving settings before returning to
+        the dashboard.
+		- Renamed a few files for consistency
+    - Skin support
+
+  - Skins
+	  - Added skins directory w/ "Original" skin		  
+
+  - Doc changes -----------------------------
+
+  - Updated the readme.txt
+  - Updated the merge checklist
+
+  - Script changes --------------------------
+
+  - Moved all the scripts to the MAMEoX/Scripts, making necessary
+    changes to support running them from the new directory.
+
+  - Fixed a major bug in the ChangeMallocs.pl script that caused
+    it to miss any MAME core files not in the root MAME/src directory.
+    This explains the infrequent crashes on certain games (where it
+    happens to die on a malloc in a cpu/sound/etc... driver). Moved
+    the ChangeMallocs.pl script to the MAME directory.
+
+  - Added FindDependencies.pl, a script used to find all symbol 
+    dependencies between the object files. This should plot out all
+    silent XBE dependencies, eliminating the simple crash case.
+
+  - Major tweaks to Sectionize.pl to utilize the new information
+    from the FindDependencies.pl script.
+
+
+*********************************************************************
+Version 0.79.1b
+
+   -------------------------------------------------------------
+  - \MAMEoX\Includes: 
+    - MAMEoX.h
+      - Upped version number
+
+  - \MAME\src\drivers\monaco.c
+    - Disabled compilation of the monaco driver until a proper
+      merge of PatchMAME is completed.
+
+   -------------------------------------------------------------
+
+ --- Integrated MAME version 0.79, changes follow -------------------
+ Changes in the \MAME\src directory
+
+ Additions:
+
+   cpu\
+     mips\
+       psx.c
+       psx.h
+
+   drivers\
+     ashnojoe.c
+     crospang.c
+     deco_mlc.c
+     funybubl.c
+     goal92.c
+     jchan.c
+     konamigq.c
+     malzak.c
+     namcos10.c
+     namcos12.c
+     quizpani.c
+     rabbit.c
+     runaway.c
+     seattle.c
+     sspeedr.c
+     stvhacks.c
+     supertnk.c
+     tceptor.c
+     vmetal.c
+
+   machine\
+     am53cf96.c
+     am53cf96.h
+     namcoio.c
+     namcoio.h
+     scudsp.c
+     scudsp.h
+     stvcd.c
+     stvcd.h
+
+   sndhrdw\
+     cage.c
+     cage.h
+
+   sound\
+     psx.c
+     psx.h
+     scsp.c
+     scsp.h
+     scsplfo.c
+     ymf271.c
+     ymf271.h
+
+   vidhrdw\
+     ashnojoe.c
+     compgolf.c
+     crospang.c
+     deco_mlc.c
+     funybubl.c
+     goal92.c
+     kopunch.c
+     malzak.c
+     quizpani.c
+     runaway.c
+     sspeedr.c
+     tceptor.c
+     voodblit.c
+     voodoo.c
+     voodoo.h
+
+   \
+     chd.c
+     chd.h
+     chdman.c
+
+ Removals:
+
+   cpu\
+     mips\
+       mips.c
+       mips.h
+     z80\
+       z80daa.h
+
+   drivers\
+     avengrgs.c
+     congo.c
+     geebee.c
+     grobda.c
+     phozon.c
+     superpac.c
+
+   includes\
+     dominos.h
+     tunhunt.h
+     videopin.h
+
+   machine\
+     dominoes.c
+     geebee.c
+     grobda.c
+     mappy.c
+     phozon.c
+     superpac.c
+     toypop.c
+     videopin.c
+
+   vidhrdw\
+     avengrgs.c
+     gameplan.c
+     geebee.c
+     grobda.c
+     phozon.c
+     superpac.c
+     taito_x.c
+
+   \
+     hdcomp.c
+
+
+*********************************************************************
+Version 0.76.1b
+
+   -------------------------------------------------------------
+  - \MAMEoX\Includes: 
+    - MAMEoX.h
+      - Upped version number
+
+   -------------------------------------------------------------
+
+ --- Specific Game fixes --------------------------------------------
+  - Megatech games (segasyse.c): Dep on segac2.c
+
+ --- Integrated MAME version 0.76, changes follow -------------------
+ Changes in the \MAME\src directory
+
+ Additions:
+
+   drivers\
+     bishi.c
+     tryout.c
+
+   vidhrdw\
+     bishi.c
+
+
+
+*********************************************************************
+Internal Version 0.75.1b
+
+ --- Integrated MAME version 0.75, changes follow -------------------
+
+ Changes in the \MAME\src directory
+
+ Additions:
+
+   drivers\
+     compgolf.c
+     djmain.c
+     dorachan.c
+     embargo.c
+     homerun.c
+     jcross.c
+     ladyfrog.c
+     marinedt.c
+     yumefuda.c
+
+   vidhrdw\
+     djmain.c
+     dorachan.c
+     homerun.c
+     jcross.c
+     ladyfrog.c
+     mainsnk.c
+
+   \
+     config.c
+     config.h
+
+*********************************************************************
+Version 0.74.1b
+
+   -------------------------------------------------------------
+  - \MAME\src:
+    - drivers\vball.c
+      - Integrated patch from pomata increasing the M6502 CPU
+        speed
+
+   -------------------------------------------------------------
+  - \MAMEoX\Includes: 
+    - MAMEoX.h
+      - Upped version number
+      - Moved graphical progressbar code to MAMEoXUtil
+
+   -------------------------------------------------------------
+  - \MAMEoX\Sources: 
+    - xbox_Main.cpp
+      - Made progressbars graphical
+
+    - MAMEoXUtil.cpp
+      - Moved graphical progressbar code to MAMEoXUtil
+
+    - xbox_Direct3DRenderer.cpp
+      - Fixed a problem w/ vector games with an initialized
+        boundary struct (it's apparently not supposed to be used by 
+        vector games)
+
+    - xbox_Miscelaneous.c
+      - Made progressbars graphical
+
+   -------------------------------------------------------------
+  - \MAMEoXLauncher\Sources:
+    - main.cpp
+      - Moved graphical progressbar code to MAMEoXUtil
+      - Fixed problem where disabling the screensaver would
+        enter an infinite input-eating loop
+      - Tossed in a warning screen if the XBOX clock is not
+        set (as this can screw up Neogeo titles)
+
+    - BaseView.cpp
+      - Fixed problem w/ 2bpp paletted PNG files (caused the
+        program to crash when certain monochrome screenshots
+        were loaded)
+
+    - ROMListScreen.cpp
+      - Integrated pong and monaco gp from PatchMAME
+      - Added option to filter out working ROMs (testing/debugging)
+
+    - OptionsScreen.cpp
+      - Added option to filter out working ROMs (testing/debugging)
+
+
+   -------------------------------------------------------------
+  - \SharedResources:
+    - Added dummy project to compile XPR resources outside of 
+      MAMEoXLauncher (needed for XBE icon support)
+
+ --- Specific Game fixes --------------------------------------------
+
+  ** Thanks to Xboxed for reporting these **
+  - Fire Battle, Clash-Road (clshroad.c): Dep on wiping.c driver
+  - Rotary Fighter (rotaryf.c): Dep on 8080bw.c
+  - Forty-Love (40love.c): Dep on buggychl.c
+  - Moon Shuttle (galaxian.c): Dep on cclimber.c
+  - Special Forces and Special Forces II (dkong.c): Dep on scramble.c
+  - Super Basketball (sbasketb.c): Dep on trackfld.c
+  - Tube Panic, Roller Jammer (tubep.c): Uses a NSC8105 CPU (m6800 
+                          driver) whose dep was not correctly handled.
+  - Frisky Tom,Radical Radial,Seicross,Sector Zone (seicross.c): Uses
+                          a NSC8105 CPU (m6800 driver) whose dep was 
+                          not correctly handled.
+  - Zodiack,Dog Fight,Moguchan,The Percussor,The Bounty (zodiack.c):
+                          Dep on espial.c
+  - Yamato (yamato.c): Dep on cclimber.c
+  - Dommy,Scrambled Egg,Eggs (scregg.c): Dep on btime.c
+  - Marvin's Maze,Mad Crasher,Vanguard II (marvins.c): Dep on snk.c
+  - Top Speed,Full Throttle (topspeed.c): Dep on rastan.c
+  - Super Slam (sslam.c): Dep on playmark.c
+  - Spiders (spiders.c): Dep on nyny.c
+  - Sichuan II,Shisensho - Joshiryo-Hen,Match It (shisen.c): 
+                           Dep on m72.c
+  - Roc'n Rope (rocnrope.c): Dep on timeplt.c
+  - China Gate (chinagat.c): Dep on ddragon.c
+  - US AAF Mustang (Japan) (nmk16.c): There was a bug in the core 
+               driver code where the initialization code partially
+               set up a sound CPU even though the stock mustang 
+               driver has no sound CPU. I changed it to remove the
+               offending initialization and reported the problem.
+  - Clowns, Dog Patch (8080bw.c): Dep on circus.c
+
+
+  ** Thanks to the rom status reporters for these **
+  - Juno First (junofrst.c): Dep on tutankhm.c
+  - Gladiator 1984 (sgladiat.c): Dep on snk.c
+  - Escape from the Planet of the Robot Monsters (eprom.c): Dep on
+                             thunderj.c
+  - Batman Part 2 (galaxian.c): Dep on phoenix.c
+  - Beastie Feastie (pacman.c): Dep on epos.c
+
+ --- Integrated MAME version 0.74, changes follow -------------------
+
+ Changes in the \MAME\src directory
+
+ Removals:
+
+   drivers\
+     fuuki16.c
+
+   vidhrdw\
+     fuuki16.c
+
+
+ Additions:
+
+   drivers\
+     inufuku.c
+
+   vidhrdw\
+     inufuku.c
+
+ --- Integrated pong and monaco gp from PatchMAME 0.62.1 ------------
+
+ Note: The integration is only partial, looks like a fair amount
+       of the existing code will need to be tweaked/rewritten to
+       get it to work w/ the 0.73 core.
+
+ Changes in the \MAME\src directory
+ 
+ Additions:
+
+   cpu\
+     gensync\*
+
+   drivers\
+     monaco.c
+     pong.c
+
+   includes\
+     monaco.h
+
+   sndhrdw\
+     pong.c
+
+   vidhrdw\
+     monaco.c
+     pong.c
+     pong.h
+
+ Modifications:
+   \
+     driver.c
+     cpuintrf.c
+     cpuintrf.h
+   
+ --- Integrated MAME version 0.73, changes follow -------------------
+
+ Changes in the \MAME\src directory
+
+ Removals:
+
+ Additions:
+   \
+
+   cpu\
+     e132xs\*
+
+   drivers\
+     fuukifg2.c
+     fuukifg3.c
+     mogura.c
+     speedatk.c
+     sprint8.c
+     strvmstr.c
+     vamphalf.c
+
+   machine\
+     strtheat.c
+     
+
+   vidhrdw\
+     fuukifg2.c
+     fuukifg3.c
+     speedatk.c
+     sprint8.c
+     stvvdp1.c     
+     stvvdp2.c     
+
+
+*********************************************************************
+Version 0.72.1b
+
+   -------------------------------------------------------------
+  - \libsmb++\src:
+    - SMBHandler.cpp
+      Fixed a bug in the password parsing code
+
+   -------------------------------------------------------------
+  - \MAME\src:
+    - input.h
+      - Increased SEQ_MAX to 20 to allow commands to be defined
+        for all 4 gamepads + the keyboard
+
+    - mame.c
+      - Added hook for automatic bootup save state loading
+    - state.c
+      - Fixed a crash due to a memcpy from NULL for MK3 state saving
+
+   -------------------------------------------------------------
+  - \MAMEoX\Includes: 
+    - MAMEoX.h
+      - Upped version number
+
+    - Keyboard.h
+      - Finished off the debug keyboard reading routines
+
+    - InputManager.h
+      - Added keyboard device access functions
+
+   -------------------------------------------------------------
+  - \MAMEoX\Sources: 
+    - xbox_FileIO.c
+      - Added handling for MAMEoX system files to apply speed
+        buffering to all writes/reads
+      - Fixed some bugs in the osd_fseek stuff, made fseeks
+        immediate, as there's no real need to buffer them (and
+        doing so breaks fwrites)
+      - Added FILETYPE_MAMEOX_FULLPATH filetype to allow the full
+        path of a file to be passed directly to the osd_f* functions
+      - Added path for automatic bootup save states
+
+    - xbox_Main.cpp
+      - Added handling for MAMEoX system files to apply speed
+        buffering to all writes/reads
+      - Unloaded the STARTUP section in main instead of the user 
+        input code. This frees up most of the memory before the
+        game tries to boot at all, rather than waiting until the
+        game is finished w/ the input code (the only thing in the
+        STARTUP section that is needed after the run_rom call)
+
+    - xbox_JoystickMouse.c
+      - Unloaded the STARTUP section in main instead of the user 
+        input code. This frees up most of the memory before the
+        game tries to boot at all, rather than waiting until the
+        game is finished w/ the input code (the only thing in the
+        STARTUP section that is needed after the run_rom call)
+      - Moved key mapping to xbox_Input.c
+    
+    - System_IniFile.cpp
+      - Changed over to use buffered reads/writes to speed up parsing
+
+    - MAMEoXUtil.cpp
+      - Fixed bezels (artwork)
+      - Added virtual memory access/allocation functions
+
+    - xbox_Direct3DRenderer.cpp
+      - Fixed an off by 1 error when setting texture coords that
+        caused clipping of a valid row of pixels
+      - Prerotate screenshots before saving the file
+      - Added graphics filtering capabilities (right now options are
+        "none" (no filtering) or "AdvanceMAME scale2x")
+
+    - Keyboard.cpp
+      - Finished off the debug keyboard reading routines
+
+    - xbox_Keyboard.cpp
+      - Renamed xbox_Keyboard.c to xbox_Keyboard.cpp
+      - Implemented missing keyboard functionality
+
+    - xbox_Miscelaneous.c
+      - Added osd_autobootsavestate() function to facilitate 
+        automatic booting of save states when a ROM has finished 
+        loading.
+
+    Added xbox_Input.c to do default key mapping and input subsystem
+      initialization
+
+    Added VirtualMemoryManager.cpp to facilitate VM usage in the 
+      future
+
+   -------------------------------------------------------------
+  - \MAMEoXLauncher\Includes:
+    - ROMList.h
+      - Added favorite status/num times played support
+
+   -------------------------------------------------------------
+  - \MAMEoXLauncher\Sources:
+    - ROMListScreen.cpp
+      - Added favorite status/num times played support
+      - Added handling for MAMEoX system files to apply speed
+        buffering to all writes/reads
+      - Added sort by favorite status and sort by number of times 
+        played
+      - Moved progress bar stuff to a central point so it can be used
+        from anywhere in the launcher
+      - Added filter by "disliked" favorite status
+      - Added sort by genre
+      - Added catver.ini parsing
+      - Added "detail" view which houses screenshots
+      - Moved screenshot loading to base class
+      - Changes for keyboard support
+
+    - OptionsScreen.cpp
+      - Added sort by favorite status and sort by number of times 
+        played
+      - Added filter by "disliked" favorite status
+      - Added sort by genre
+      - Added a simple screensaver (thanks to Noodle for the 
+        suggestion)
+      - Added graphics option "scale filter".
+
+    - StartMenu.cpp
+      - Made menu functions token based instead of cursor position 
+        based. This makes it much easier to have fully dynamic menus
+      - Made the B button back out of the menu
+      - Changes for keyboard support
+
+    - ListView.cpp
+      - Changes for keyboard support
+      
+    - main.cpp
+      - Added handling for MAMEoX system files to apply speed
+        buffering to all writes/reads
+      - Moved progress bar stuff to a central point so it can be used
+        from anywhere in the launcher
+      - Added "Copy system files from DVD" menu item to allow CD/DVD
+        users to copy over hiscore.dat, samples, etc...
+      - Made menu functions token based instead of cursor position 
+        based. This makes it much easier to have fully dynamic menus
+      - Added a simple screensaver (thanks to Noodle for the 
+        suggestion)
+      - Added screendump command (bound to left analog) for launcher
+      - Changes for keyboard support
+
+    - VirtualKeyboard.cpp
+      - Changes for keyboard support. Note that this has only been
+        tested on a German keyboard, and I wouldn't be surprised if
+        some keys (esp /, @, \, :) will be busted on an English 
+        keyboard. 
+
+    - Renamed ROMList, OptionsPage, Help, LightgunCalibrator to 
+      xxxxScreen format to increase "findability"
+    - Added new class "CBaseMenuView" which takes care of drawing a
+      fully resizable menu backdrop. Also removed the old static
+      image backdrops.
+    - Added new class "CTVCalibrationScreen" which takes care of 
+      screen resizing/repositioning
+    - Added new class "CGFilterManager" which handles graphics 
+      filters/scalers for smoothing game frames. (opcode)
+    - Added scale2x.cpp/.h to project to provide AdvanceMAME's 
+      Scale2x filter.
+
+   -------------------------------------------------------------
+  - \Sectionize.pl
+    - Fixed dep for Revolution X
+    - Fixed dep for Tetris Plus 2 (MegaSystem 32 version)
+    - Fixed dep for Pac-Man (Galaxian Hardware)
+
+  - Fixed the .NET 2k2 solution files (thanks go to Mathijs Brands)
+
+  - Added GenerateVCPROJFiles.pl to the MAME subdir, as I got sick of
+    setting the output file path for each new file (when there are 
+    several files in different subdirs w/ the same name one object file
+    would overwrite the other, causing undefined symbol errors)
+
+
+
+ --- Integrated MAME version 0.72, changes follow -------------------
+
+ Changes in the \MAME\src directory
+
+ Removals:
+   \
+   drivers\
+     dominos.c
+
+   includes\
+     sprint2.h
+
+   machine\
+     sprint2.c
+
+   vidhrdw\
+     dominos.c
+
+
+ Additions:
+   \
+
+   cpu\
+     g65816\*
+     spc700\*
+
+   drivers\
+     bigevglf.c
+     ltcasino.c
+     mazerbla.c
+     nss.c
+     pitnrun.c
+     sbowling.c
+     sengokmj.c
+     sprint4.c
+     ssrj.c
+     supdrapo.c
+     xorworld.c
+
+   includes\
+     snes.h
+     snk.h
+
+   machine\
+     bigevglf.c
+     pitnrun.c
+     snes.c
+
+   sndhrdw\
+     segasnd.c
+     segasnd.h
+     snes.c
+
+   sound\
+     sp0250.c
+     sp0250.h
+
+   vidhrdw\
+     bigevglf.c
+     matrix3d.c
+     matrix3d.h
+     pitnrun.c
+     sengokmj.c
+     snes.c
+     sprint4.c
+     ssrj.c
+     xorworld.c
+
+
+*********************************************************************
+Version 0.71.2b 
+
+
+   -------------------------------------------------------------
+  - \MAMEoX\Includes: 
+    - MAMEoX.h
+      - Upped version number
+
+    - InputDevice.h
+      - Added virtual input device base class
+
+    - Keyboard.h
+      - Added some debug keyboard routines
+
+   -------------------------------------------------------------
+  - \MAMEoX\Sources: 
+
+    - xbox_main.cpp
+      - Moved LoadOptions above the graphics initialization so
+        that the VSYNC option is actually used (doh!)
+      - Enabled writeback caching for > 64 megs
+
+    - DebugLogger.cpp
+      - Fixed: Release not called on vertex buffer after 
+        GetStreamSource() function.
+
+    - xbox_fileio.c
+      - Added code to allow 4 ROM paths
+      - Added buffering for fwrite(), should speed up ROM exiting
+        a bit (when saving the input settings it did a whole bunch
+        of tiny fwrite(), each of which utilizes WriteFile on an
+        unbuffered device, which was _slow_)
+
+   -------------------------------------------------------------
+  - \MAMEoXLauncher\Includes:
+
+    - LightgunCalibrator.h
+      - Set the backdrop texture to NULL, like it's supposed
+        to be.
+
+   -------------------------------------------------------------
+  - \MAMEoXLauncher\Sources:
+
+    - main.cpp
+      - Reset the texture colorop to "TEXTURE" after rendering
+        the subviews. Failure to do so caused it to be left to
+        "DIFFUSE" after rendering the lightgun cursor, which led
+        to an unusable calibration screen.
+      - Added menu option to reload just the ROM status file
+      - Enabled writeback caching for > 64 megs
+
+    - ROMList.cpp
+      - Changed it so romstatus.xml file is only parsed when scanning
+        for new ROMs. This decreases load time between ROMs for large
+        XML files.
+      - Added public function to force reload the rom status file
+      - Fixed Backup feature (yet again, this is what, the 3rd time
+        I broke it? I'm still surprised that people use it :))
+      - Added code to allow 4 ROM paths
+      - Changed backup feature to use CopyFile, as it was broken in 
+        the change to multiple ROM paths (break #4 :)). For some 
+        reason MoveFile craps out when I try to move across 
+        partitions (or maybe just different logical drive letters)
+        
+    - OptionsPage.cpp
+      - Changed the text for "problem ROM" filters
+      - Added code to allow 4 ROM paths
+
+   -------------------------------------------------------------
+  - \Sectionize.pl
+    - Fixed dep for Operation Wolf
+    - Fixed dep for Rainbow Islands
+    - Fixed dep for Fighting Roller
+    - Fixed dep for Tutankham
+    - Fixed dep for Vigilante
+    - Fixed dep for Yie ar kung fu
+    - Fixed dep for Pooyan
+
+*********************************************************************
+Version 0.71.1b
+
+   -------------------------------------------------------------
+  - \MAME\src:
+    - Various: Switched all malloc() calls to "osd_malloc()" so
+      we can catch malloc failures and report a sane message to
+      the user.
+
+
+   -------------------------------------------------------------
+  - \MAMEoX\Includes: 
+    - MAMEoX.h
+      - Upped version number
+
+    - GraphicsManager.h
+      - Added VSYNC option, toggle between OFF and 
+        SYNC EVERY FRAME
+
+   -------------------------------------------------------------
+  - \MAMEoX\Sources: 
+    - xbox_Miscelaneous.c
+      - Added osd_malloc function to check malloc's and report
+        out of memory conditions to the user
+
+    - xbox_Main.cpp:
+      - Added better checking for clone/no clone status to avoid
+        marking BIOS clones as true clones.
+
+    - xbox_Display.c:
+      - Implemented MAME hooks for frameskip/throttle toggling
+      - Fixed a problem with the throttling code that seems to
+        greatly improve autoframeskip reliability.
+      - Added code to toggle the MAMEoX debug console on and off 
+        (hold "BACK" for 2 seconds) Note that this only works in
+        Debug builds.
+      - Reorganized the code a bit to make it nice (broke 
+        autoframeskip and UI input checking into separate INLINE
+        functions. Moved the input polling around so that throttling
+        is always the absolute last thing done in the update 
+        function.
+
+    - MAMEoXUtil.cpp
+      - Removed history.dat support
+
+    - DebugLogger.cpp
+      - Added code to toggle the MAMEoX debug console on and off 
+        (hold "BACK" for 2 seconds) Note that this only works in
+        Debug builds.
+      - Changed the size and color of the debug console
+      - Added option to print messages w/out function/file info
+
+    - xbox_Sound.c:
+      - Fixed problem that allowed the sound buffer to be overrun
+        constantly, causing crackling.
+
+   -------------------------------------------------------------
+  - \MAMEoXLauncher\Sources:
+
+    - main.cpp
+      - Put all textures in a texture set helper class
+      - Implemented Start Menu functionality
+      - Various changes to support vsync'd display
+
+    - Help.cpp
+      - Put all textures in a texture set helper class
+      - Integrated new gfx from r4dius
+
+    - ROMList.cpp
+      - Put all textures in a texture set helper class
+      - Repositioned (very slightly) the scroll icons
+      - Used the general message backdrop for the "checking against
+        known ROMs" display.
+      - Various changes to support vsync'd display
+      - Fixed: Superscroll index incorrect after toggling 
+        clones/no clones
+      - Changed it so that MAMEoX will attempt to keep the 
+        cursor on the selected ROM when toggling clones/no clones
+      - Fixed: ROM list cache file not updated when ROM is removed
+        from the list via "Remove Selected ROM" feature
+      - Put in support for various sort modes and filters, these may
+        be changed in the options screen.
+      - Put in support for ROMSTATUS.XML name colorization (the color
+        of the name in the ROM list is changed based on the reported
+        working/nonworking status of the ROM).
+
+    - OptionsPage.cpp
+      - Integrated new gfx from r4dius
+      - Added VSYNC and framerate throttling options
+      - Added frame skip option
+      - Split directories up into two separate options
+      - Removed history.dat support
+      - Added page for ROMList settings
+
+    - LightgunCalibrator.cpp
+      - Changed text from "Push B to discard changes" to
+        "Push B to recalibrate"
+
+    - StartMenu.cpp
+      - Added start menu class
+
+    - BaseView.cpp
+      - Added base view class
+
+    - BasePopupView.cpp
+      - Added base class for "popup" views (VirtualKeyboard/StartMenu)
+
+   -------------------------------------------------------------
+  - \Sectionize.pl
+    - Switched to a more aggressive handling of silent XBE dependencies.
+      This will undoubtedly break games that used to work until they are
+      reported and thrown into the new families, but it gives up about a 
+      meg of RAM.
+
+  - \Desectionize.pl
+    - Added commandline argument parsing to allow selective desectionization
+
+ --- Integrated MAME version 0.71, changes follow -------------------
+
+ Changes in the \MAME\src directory
+
+ Removals:
+
+ Additions:
+   \
+
+   drivers\
+     boxer.c
+     enigma2.c
+     namcos11.c
+     r2dtank.c
+
+   includes\
+     psx.h
+
+   machine\
+     psx.c
+
+   vidhrdw\
+     boxer.c
+     psx.c
+
+
+*********************************************************************
+Version 0.70.3b
+
+   -------------------------------------------------------------
+  - \MAME\src:
+    - mame.c
+      - Put a call to osd_sound_enable just after cpu_run to
+        stop annoying sound looping when exiting a game.
+
+    - inptport.c
+      - Reordered input checking to allow lightgun games to
+        take input from analog joysticks if no lightgun is
+	available
+
+    - inptport.h
+      - Bumped IPT_UI_CONFIGURE and all following commands up
+        to 2*IPT_EXTENSION to allow room for any input extension
+        slots. This fixes a problem in xbox_JoystickMouse.c where
+        certain case values (ex 
+        IPT_PADDLE|IPF_PLAYER1 + IPT_EXTENSION) are repeated
+
+   -------------------------------------------------------------
+  - \MAMEoX\Includes: 
+    - MAMEoX.h
+      - Upped version number
+
+    - DebugLogger.h
+      - Cobbed together a console debug logger, PRINTMSG_TO_CONSOLE,
+        render w/ RenderDebugConsole
+
+    - xbox_Direct3DRenderer.h
+      - Put in code to reposition the screen as well as resize
+      - Moved resize variables from globals to members of the
+        render setup struct
+
+    - InputManager.h
+      - Added "Is*ButtonPressed()" functions to act across all
+        gamepads. This allows users other than X to control
+        input (necessary for when a lightgun is in slot 0, for
+        instance)
+
+    - FontSet.h
+      - Added font resource helper class
+
+   -------------------------------------------------------------
+  - \MAMEoX\Sources: 
+
+    - DebugLogger.cpp
+      - Cobbed together a console debug logger, PRINTMSG_TO_CONSOLE,
+        render w/ RenderDebugConsole
+
+    - MAMEoXUtil.cpp
+      - Put in code to reposition the screen as well as resize
+      - Made ROM List settings persistent
+      - Added option to enable artwork
+      - Added option to set screenshot directory
+      - Added option to set history.dat filename
+
+    - xbox_Display.c
+      - Added screenshot support
+
+    - xbox_Direct3DRenderer.cpp
+      - Put in code to reposition the screen as well as resize
+      - Moved resize variables from globals to members of the
+        render setup struct
+      - Fixed bug for 16/32 bit direct rendering w/ SWAPXY flag
+        set and an update rectangle with a left hand side != 0
+
+    - xbox_Miscelaneous.c
+      - Switched back to | character now that it is supported
+        by the Hawaiian Punk font
+
+    - xbox_JoystickMouse.c
+      - Added mappings for AD sticks + Lightgun
+      - Readded mapping for IPT_PADDLE|IPT_PLAYER1+IPT_EXTENSION
+        now that the inptport.h enum is fixed
+      - Added mapping for screenshots (BACK+A+B)
+
+   -------------------------------------------------------------
+  - \MAMEoXLauncher\Sources:
+
+    - main.cpp
+      - Put in code to reposition the screen as well as resize
+      - Fixed: Backup (B+X) feature doesn't work anymore, just
+               shows help screen.
+      - Put in new loading screen (thanks Stephen)
+      - Changed all list views to use the new CListView base class
+      - Put in new gfx from r4dius
+
+    - Help.cpp
+      - Changed all list views to use the new CListView base class      
+
+    - ROMList.cpp
+      - Changed all list views to use the new CListView base class
+      - Fixed superscroll so it doesn't jump to the top of the
+        current section (i.e. tapping Y no longer does anything,
+        cause it was annoying me)
+      - Made ROM List settings persistent
+
+    - OptionsPage.cpp
+      - Changed all list views to use the new CListView base class
+      - Added option to enable artwork
+      - Added option to set screenshot directory
+      - Added option to set history.dat filename
+
+    - ListView.cpp
+      - Added list view base class
+
+    - LightgunCalibrator.cpp
+      - Added lightgun calibration class
+
+   -------------------------------------------------------------
+  - \MAMEoXLauncher\MediaFiles:
+
+    - Added a bunch of new resources from r4dius and one from
+      Stephen Cameron
+
+   -------------------------------------------------------------
+  - \Sectionize.pl
+    - Fixed XBE dependency for Pipe Dream 
+
+
+ --- Specific Game fixes --------------------------------------------
+Gunlock - Display not centered properly
+NeoGeo games: Display half screen w/ messed up palette in 32 bit color
+The Simpsons (note that this game does not work in MAME for Windows 0.70)
+NBA Jam
+Mortal Kombat 1, 2
+Frog (Galaxian Hardware)
+Journey
+Salamander 2 (Out of memory, but doesn't crash)
+Martial Champion (and many other konami games)
+Pipe Dream
+
+*********************************************************************
+Version 0.70.2b
+
+ Note: I finally figured out exactly why 0.66b went bad.
+       Everything before and after 0.66b didn't actually
+       unload any of the driver sections. When 0.66b unloaded
+       the sections, release mode was compiled w/ String Pooling
+       enabled. I believe that this allowed code in a given 
+       section to become dependent on the string data in another 
+       section, creating new silent XBE dependencies that could
+       not be resolved. I've disabled String Pooling, and 
+       everything seems OK now. Make certain that it is never
+       enabled again.
+ Note2: It's not just String Pooling, also global optimizations...
+
+   -------------------------------------------------------------
+  - \MAME\src:
+    - cpuexec.c
+      - Realized that unloading a section releases all malloc'd
+        memory back to the heap. Fixed by first loading the CPU
+        to be used, then unloading all CPU sections. This way
+        the CPU's that we're using have a refcount of 2, so
+        they stay resident.
+
+    - usrintrf.c
+      - Simplified section load/unload (merged sections don't
+        require separate data/code loads
+
+   -------------------------------------------------------------
+  - \MAMEoX\Includes: 
+    - MAMEoX.h
+      - Upped version number
+
+
+   -------------------------------------------------------------
+  - \MAMEoX\Sources: 
+    - xbox_JoystickMouse.c
+      - Put initialization code in a section that is unloaded
+        as soon as it's completed (for a gain of 50k or so)
+
+    - xbox_Main.cpp:
+      - Reordered LoadDriverSectionByName to be before the 
+        UnloadDriverSections, just in case something was malloc'd
+        by the section (and for consistency w/ cpuexec.c).
+      - Put initialization code in a section that is unloaded
+        as soon as it's completed (for a gain of 50k or so)
+      - Signed driver.list file to prevent corruption
+       - Put in code to reboot and dump log when missing fonts
+
+   -------------------------------------------------------------
+  - \MAMEoXLauncher\Sources:
+
+    - main.cpp
+       - Signed driver.list file to prevent corruption
+       - Put in code to reboot and dump log when missing fonts
+       - Put in credits and switched over to new splash screen 
+         (thanks goes to r4dius again for the graphics)
+
+    - ROMList.cpp
+       - Signed rom.list file to prevent corruption
+       - Put in a progress bar for the second half of ROM list
+         generation
+       - Changed ROM checking code to use std::find instead of
+         simple linear search. Should be much faster now (though
+         it's supposed to be a rare op, so hopefully nobody will 
+         be in a situation to notice :))
+
+  -------------------------------------------------------------
+  - \Desectionize.pl
+  - \Sectionize.pl
+    - Updated to merge data + code sections
+    
+
+*********************************************************************
+Version 0.70.1b
+
+  - General:
+    - Added new fonts (Arial, Arial Narrow and Courier New)
+    - Reformatted screens to work w/ new fonts
+    - Remove dependencies bug
+
+   -------------------------------------------------------------
+  - \MAMEoX\Includes: 
+
+    - MAMEoX.h
+      - Upped version number
+      - Modified version number to be MAME license compliant
+      - Added code to easily set render target to a texture
+
+    - Gamepad.h
+      - New function: GetButtonState which returns all GP_ flags of 
+        the pressed buttons, DPAD, etc.
+      - New funct IsOnlyButtonPressed returns TRUE if only the 
+        button specified in the params are pressed
+      - New function: GetButtonState which returns all GP_ flags of the 
+        pressed buttons, DPAD, etc.
+      - Made a bunch of functions properly const
+
+    - xbox_Direct3DRenderer.h
+      - Joined all D3D renderer opts into a struct
+
+    - InputManager.h
+      - Added IsGamepadConnected() function
+
+   -------------------------------------------------------------
+  - \MAMEoX\Sources:
+
+    - Gamepad.cpp
+      - New function: GetButtonState which returns all GP_ flags of 
+        the pressed buttons, DPAD, etc.
+      - New funct IsOnlyButtonPressed returns TRUE if only the 
+        button specified in the params are pressed
+      - New function: GetButtonState which returns all GP_ flags of the 
+        pressed buttons, DPAD, etc.
+      - Made a bunch of functions properly const
+
+    - xbox_JoystickMouse.c
+      - Remapped paddles, dials, and trackball to left analog stick
+      - Fixed: Pressing right on LA now properly produces 128 for
+        analog position
+
+    - xbox_Direct3DRenderer.cpp
+      - Added option for screen rotation
+      - Added option to select texture filters
+
+    - MAMEoXUtil.cpp
+      - Added code to easily set render target to a texture
+
+   -------------------------------------------------------------
+  - \MAMEoXLauncher\Includes:
+
+    - OptionsPage.h
+      - Added option for screen rotation
+      - Added option to select texture filters
+      - Fixed problem where not all options in Directories were
+        selectable
+      - Fixed problem where the cursor in Network Settings could
+        scroll past the end of the list
+
+    - VirtualKeyboard.h
+      - Added basic virtual keyboard class
+
+   -------------------------------------------------------------
+  - \MAMEoXLauncher\Sources:
+
+    - ROMList.cpp
+      - Bugfix: Additional info shows the files correct now
+      - Additional info shows year and clonefilename now
+      - Use new font and added manufacturer in the game list
+      - Additional info is default now
+      - More lines (30 instead of 18) in the game list
+      - Made ROMList, OptionsPage, and Help render to a resizeable,
+        rotateable texture
+
+    - OptionsPage.cpp
+      - Added option for screen rotation
+      - Added option to select texture filters
+      - Made ROMList, OptionsPage, and Help render to a resizeable,
+        rotateable texture
+      - Made use of the new VirtualKeyboard class
+      - Added option to disable sound processing
+      - Enabled option to change sound samplerate
+
+    - Help.cpp
+      - Made ROMList, OptionsPage, and Help render to a resizeable,
+        rotateable texture
+
+    - main.cpp
+      - Joined all D3D renderer opts into a struct
+      - Added a RequireController call to splashscreen
+      - Added more calls to RequireController
+      - Made ROMList, OptionsPage, and Help render to a resizeable,
+        rotateable texture
+      - Implemented rotation on the ROM list
+      - Changed font for Help page
+
+    - VirtualKeyboard.cpp
+      - Added basic virtual keyboard class
+
+   -------------------------------------------------------------
+  - \MAMEoX\src:
+    - inptport.c
+      - Changed analog input code to use a joystick as a mouse,
+        rather than attempting to use the broken trackball
+	code. (Fixes trackball and steering wheel games)
+
+  - \MAME\src\vidhrdw
+    - vball.c
+      - Increased the size of array "scrollx" to 32 elements to
+        keep the vball_interrupt function from writing past the
+	end of the array.
+
+   -------------------------------------------------------------
+  - Media
+    - help.txt
+      - Integrated patch from John Wu (thanks!)
+
+
+ --- Integrated MAME version 0.70, changes follow -------------------
+
+ Changes in the \MAME\src directory
+
+ Removals:
+
+ Additions:
+   \
+     memdbg.c
+     memdbg.h
+
+   drivers\
+     djboy.c
+     glass.c
+
+   includes\
+
+   machine\
+     pgmprot.c
+
+   vidhrdw\
+     djboy.c
+     glass.c
+
+   xml2info\
+     <directory added>
+     
+
+ --- Specific Game fixes --------------------------------------------
+  U.S. Championship V'ball
+  Cruis'n USA - Runs out of memory, now prints that and properly reboots
+  Cruis'n World - Runs out of memory, now prints that and properly reboots
+
+*********************************************************************
+
+Version 0.67b
+
+  - \MAMEoX\Includes: 
+
+    - MAMEoX.h
+      - Upped version number to 0.67b
+      - Added symlink support (code based on submission from Redline)
+  
+    - xbox_FileIO.h
+      - Added symlink support (code based on submission from Redline)
+
+    - xbox_Direct3DRenderer.h
+      - Added Aspect Ratio Correction toggle option
+
+    - DebugLogger.h
+      - Added support for dumping debug data to a file in Release mode
+
+   -------------------------------------------------------------
+  - \MAMEoX\Sources:
+
+    - xbox_FileIO.cpp
+      - Added symlink support (code based on submission from Redline)
+
+    - xbox_Main.cpp
+      - Put back the call to LoadDriverDataSections that caused
+        0.66b to fail when running in Release mode. Put in a note
+	to remind me not to take it out again :)
+
+    - MAMEoXUtil.cpp
+      - Added symlink support (code based on submission from Redline)
+
+    - xbox_Direct3DRenderer.cpp
+      - Added Aspect Ratio Correction toggle option
+
+    - DebugLogger.cpp
+      - Added support for dumping debug data to a file in Release mode
+
+   -------------------------------------------------------------
+  - \MAMEoXLauncher\Sources:
+
+    - OptionsPage.cpp
+      - Added read-only listing of symlinks to options
+      - Added Aspect Ratio Correction toggle option
+
+    - main.cpp
+      - Added Aspect Ratio Correction toggle option
+
+   -------------------------------------------------------------
+  - libsmb++\src:
+
+    - SessionPacket.cpp
+      - Added #undef errno to fix compiler issues
+
+    - NetBIOSPacket.h
+      - Added #undef errno to fix compiler issues
+
+
+*********************************************************************
+Version 0.66b
+
+  - \MAME\src\usrintrf.c
+    - Added a call to LoadDriverDataSections()
+      in the block of code where the drivers[] array
+      is parsed to find a working clone of a ROM that
+      is tagged as invalid. This fixes crashes for
+      these games (such as Alexx Kid set 1)
+
+  - \MAMEoX\Includes\Gamepad.h
+  - \MAMEoX\Sources\Gamepad.cpp
+    - Added CGamepad class w/ helper functions for
+      button state checking
+
+  - \MAMEoX\Includes\StdString.h:
+    - Defined SS_NO_IMPLICIT_CAST to force us to
+      use c_str(). Apparently the CStdString class
+      cannot be passed as an elipsis argument, which
+      is why it sometimes crashes in PRINTMSG macros.
+      (See the notes for SS_SAFE_FORMAT in this file)
+
+  - \MAMEoX\Includes\MAMEoX.h
+    - Updated version number
+    - Save superscroll index when launching the utility XBE
+    - Renamed WaitForNoKey and WaitForKey to WaitForNoButton and
+      WaitForAnyButton resp.
+    - Added LAUNCH_RUN_AS_IF_REBOOTED command to properly handle
+      case where MAMEoX.xbe is started instead of default.xbe
+    - clonename, manufacturer, year added into MAMEDriverData_t 
+
+  - \MAMEoX\Sources\xbox_Main.cpp
+    - Removed unloading of game sections after a game
+      was run, this speeds up the return to the game selection
+      by quite a bit. (opcode)
+    - Hopefully disabled memory card initialization, as it
+      causes crashes
+    - Changed build process to use custom imagebld.switch
+      files, setting the driver sections to \NOPRELOAD as
+      originally intended. This allows us to remove the Unload
+      and Load general section calls and just load the individual
+      sections that we need, speeding up load times.
+    - Adaptations for CGamepad addition
+    - Added LAUNCH_RUN_AS_IF_REBOOTED command to properly handle
+      case where MAMEoX.xbe is started instead of default.xbe
+    - clonename, manufacturer, year added into DriverList (Save)
+
+  - \MAMEoX\Sources\MAMEoXUtil.cpp
+    - Added network and directory ini entries to SaveOptions
+    - Added "DisableNetworking" option to ensure that networking
+      is not started at all if not wanted. For some reason my
+      current network setup takes about 40 seconds to boot in debug
+      mode, this is a hack until I figure out why.
+    - Renamed WaitForNoKey and WaitForKey to WaitForNoButton and
+      WaitForAnyButton resp.
+    - Adaptations for CGamepad addition
+
+  - \MAMEoX\Sources\xbox_FileIO.cpp:
+    - Fixed a problem where the file was new'd but not memset to
+      0, causing the fileposition and other members to be undefined.
+
+  - \MAME\src\vidhrdw\namcos1.c
+    - Reverted back to MAME 0.60 version of this file
+      some update after 0.60 made it crash the xbox, but
+      works fine on the pc version of MAME. This makes
+      namco system 1 games work now, whereas before they
+      would load the roms then crash when video was 
+      started. (opcode)
+
+  - \Sectionize.pl
+    - Updated to dump two imagebld.switch files, one for
+      debug, one for release. Hopefully this can be used
+      to eliminate the need to unload a ton of sections
+      before executing each ROM
+    - Updated to also sectionize CPU files
+    - Fixed a stupid mistake that may have caused some
+      driver files not to be loaded when they should've
+      been.
+
+  - \imageblddbg.switch
+  - \imagebld.switch
+  - \DBGMAMEoX_XBE.bat
+  - \MAMEoX_XBE.bat
+    - Added files necessary to generate MAMEoX.xbe without
+      preloaded XBE sections.
+    - These files were immediately removed, as I didn't like
+      the way it ended up working, did some profiling, and
+      realized that it wasn't making a noticeable difference
+      (even in debug mode)
+
+  - \MAMEoXLauncher\Sources\main.cpp
+    - Hopefully disabled memory card initialization, as it
+      causes crashes
+    - Improved error messages for missing files
+    - Adaptations for CGamepad addition
+    - Added LAUNCH_RUN_AS_IF_REBOOTED command to properly handle
+      case where MAMEoX.xbe is started instead of default.xbe
+    - clonename, manufacturer, year added into DriverList Load)
+
+  - \MAMEoXLauncher\Includes\ROMList.h
+  - \MAMEoXLauncher\Sources\ROMList.cpp
+    - Save superscroll index when launching the utility XBE
+    - Adaptations for CGamepad addition
+
+  - \MAMEoXLauncher\Sources\Help.cpp
+    - Adaptations for CGamepad addition
+    - Turned off cursor highlighting
+    - Changed text color to blue from green
+
+  - \MAMEoXLauncher\Sources\OptionsPage.cpp
+      - Adaptations for CGamepad addition
+      - Added read-only pages for network and directory options
+
+  - \ZLIB\ZLIB.vcproj
+  - \MAMEoXLauncher\MAMEoXLauncher.vcproj
+  - \MAMEoX\MAMEoX.vcproj
+  - \MAME\MAME.vcproj
+  - \libsmb++\libsmb.vcproj
+    - Changed all debug versions to use single-threaded debug
+      lib to stay inline w/ release mode
+    - Fixed problem where MAMEoX project attempted to use the
+      release mode libsmb in debug mode, making it impossible
+      to automatically build from clean in debug mode (unless
+      it was done following a release build)
+    - Changed MAMEoX XBE to use runtime checking on uninitialized
+      vars and stack validity in debug mode, led to discovery of
+      an apparent stack overflow and slight increase of stack size
+
+ --- Specific Game fixes --------------------------------------------
+  Ataxx
+  Asylum
+  Alex Kidd (Set 1) - The ROM is tagged as non-working, but no longer crashes
+  U.S. Classic
+  Hyper Sports
+  Hyper Olympics '84
+
+*********************************************************************
+Version 0.65b
+  - Fixed a slight glitch in rendering where a grey/white
+    bar would show on the left and right of the rendered
+    frame. (opcode)
+
+  - Fixed Sound, I think sound is nearly if not 100%
+    correct, it sounds exactly like my win32 port
+    of MAME as far as I can tell anyway.  Also, sound
+    will output to all available speakers, sounds better
+    if you have a 5.1 system IMHO. (opcode)
+
+  - Fixed the XDK file debacle, now any files
+    that the project references from the xdk will
+    now work on any xdk as long as the xdk defined
+    the environment variable XDK to point to the
+    base dir of the xdk (I think all current xdks
+    do this). (opcode)
+
+  - Removed all _RPTx macro calls as they apparently don't
+    properly send to xboxwatson.
+
+    Opcode (5/25/03):
+  ------------------
+    - Added Network settings to INI file
+    - Added File Path settings to the INI file
+    - Moved INI file to always be in U:\4d414d45\INI\MAMEoX.ini
+    - Added SMB support for loading files (ROMS!!) from smb shares
+      format of smb share is exactly like xbox media player,
+      i.e. smb://user:password@computer/sharedirectory
+      as of this release files can only be READ from shares, not Written
+    - Changed file handling to not cache files into memory but
+      rather load them like the mame core does (not sure if this saves
+      memory or not, can't hurt though.)
+  ------------------
+
+  - \MAMEoX\Includes\DebugLogger.h
+  - \MAMEoX\Sources\DebugLogger.cpp
+    - Switched PRINTMSG to use OutputDebugString if _DEBUG is defined
+    - Added implicit \n to PRINTMSG
+
+  - \media\help.txt:
+    - Help file
+
+  - \MAMEoX\Sources\xbox_Main.cpp:
+    - Removed unused gamepad references
+    - Added progress bar for driver dumping sequence
+    - Added MAME core version to driver file sig.
+    - Fixed some XBE dependencies
+
+  - \MAMEoX\Sources\xbox_Miscelaneous.c:
+    - Added Debug/Release mode notification to version string
+
+  - \MAMEoX\Sources\xbox_JoystickMouse.c:
+    - Improved analog controls
+    - Added buttons as analogs
+    - Added partial lightgun support
+
+  - \MAMEoX\Sources\MAMEoXUtilcpp:
+    - Added gamepad capabilities checking for Lightgun support
+    - Added function to wait until a given gamepad is inserted
+
+  - \MAMEoX\Sources\xbox_Sound.c:
+    - Cosmetic changes to make debuggig easier
+
+  - \MAMEoX\Sources\xbox_FileIO.c:
+    - Made the ROM backup path writeRequired
+
+  - \MAMEoX\Includes\MAMEoX.h:
+    - Updated version number
+    - Added gamepad capabilities checking for Lightgun support
+    - Added function to wait until a given gamepad is inserted
+    - Added Debug/Release mode notification to version string
+
+  - \MAMEoX\Includes\InputManager.h:
+    - Added gamepad capabilities checking for Lightgun support
+    - Changed gamepad and capabilities over to pointers from
+       const references
+    - Added function to wait until a given gamepad is inserted
+
+  - \MAMEoX\Includes\xbox_FileIO.h:
+    - Made the ROM backup path writeRequired
+      
+  - \MAMEoXLauncher\sources\main.cpp:
+    - Help loading
+    - Option mode on button B+Y now
+    - Added function to wait until a given gamepad is inserted
+    - Added MAME core version to driver file sig.
+    - Bugfix for the backup (X+B) feature
+    - Added Debug/Release mode notification to version string
+
+  - \MAMEoXLauncher\sources\Help.cpp:
+
+  - \MAMEoXLauncher\includes\Help.h:
+    - Help functionality (Button X)
+
+  - \MAMEoXLauncher\includes\ROMList.h:
+  - \MAMEoXLauncher\sources\ROMList.cpp:
+    - Made the ROM backup path writeRequired
+    - Black button to toggle clones on/off
+    - White button for advanced game list (not yet)
+    - Show With / without Clones in the header
+    - ROM list is regenerated via B+A now
+    - Switching between show/hide clones no longer
+      requires a list regeneration
+
+ --- Specific Game fixes --------------------------------------------
+  Bomber Man World (XBE dependency)
+
+ --- Integrated MAME version 0.69, changes follow -------------------
+
+ Changes in the \MAME\src directory
+
+ Removals:
+
+ Additions:
+   \
+
+   drivers\
+     jalmah.c
+     mustache.c
+     paradise.c
+     plygonet.c
+     portrait.c
+     wolfpack.c
+
+    includes\
+      paradise.h
+
+    machine\
+      acitya.c
+
+    vidhrdw\
+      mustache.c
+      paradise.c
+      plygonet.c
+      portrait.c
+      wolfpack.c
+
+
+*********************************************************************
+Version 0.64b
+
+  - \Docs\readme.txt:
+    - Noted new directory for CHD files
+
+  - \MAME\cheat.c:
+    - Disabled watch prints by default
+
+  - \MAMEoX\Includes\MAMEoX.h:
+    - Moved MAME core version string to header file
+    - Added build string to report what version of VC++ was used
+      to compile the image.
+
+  - \MAMEoX\Includes\InputManager.h:
+    - Renamed WaitForNoKeys to WaitForNoKey
+
+  - \MAMEoX\Includes\xbox_FileIO.h:
+    - Moved romlist and driverlist directory to default to the d:
+      as there's no real reason to force it to Z.
+    - Added path for CHD files (Harddrive images)
+    - Changed Z: for writable data to T:
+
+  - \MAMEoX\Sources\xbox_FileIO.cpp:
+    - Added path for CHD files
+    - Changed ROMLISTPATH so that it can be properly remapped to
+      the T:
+    - Changed Z: for writable data to T:
+
+  - \MAMEoX\Sources\MAMEoXUtil.cpp:
+    - Fixed a couple more INI bugs (improperly mapped options)
+    - Renamed WaitForNoKeys to WaitForNoKey
+
+  - \MAMEoX\Sources\xbox_main.cpp:
+    - Fixed a non-termination bug w/ the Die function.
+    - Renamed WaitForNoKeys to WaitForNoKey
+    - Changed ROMLISTPATH so that it can be properly remapped to
+      the T:
+
+  - \MAMEoXLauncher\MediaFiles:
+    - Added directory w/ Media files
+
+  - \MAMEoXLauncher\Sources\main.cpp
+    - Fixed a non-termination bug w/ the Die function.
+    - Moved all ROMList user input to the ROMList file.
+    - Updated splashscreen w/ graphical logo (thanks to r4dius)
+    - Added backdrop to ROM List screen (thanks to r4dius)
+    - Changed ROMLISTPATH so that it can be properly remapped to
+      the T:
+
+  - \MAMEoXLauncher\Sources\ROMList.cpp:
+    - Moved all ROMList user input to the ROMList file
+    - Changed ROMLISTPATH so that it can be properly remapped to
+      the T:
+
+  - \MAMEoXLauncher\Includes\OptionsPage.h:
+    - Added INI options editing class
+
+  - \MAMEoXLauncher\Sources\OptionsPage.cpp:
+    - Added INI options editing class
+
+ --- Integrated MAME version 0.68, changes follow -------------------
+
+ Changes in the \MAME\src directory
+
+ Removals:
+   cpu\m68000\asmintf.c.cra
+   drivers\unico16.c
+   vidhrdw\unico16.c
+
+ Additions:
+   \
+	blitgen.c  - Don't add to project
+	hash.c
+	hash.h
+	mameblit.c - Don't add to project
+	sha1.c
+	sha1.h
+
+   drivers\
+	bwing.c
+	chaknpop.c
+	chindrag.c
+	fantland.c
+	groundfx.c
+	grtwall.c
+	lethalj.c
+	mainsnk.c
+	metlclsh.c
+	pbillian.c
+	raiden2.c
+	realbrk.c
+	rotaryf.c
+	sbugger.c
+	sg1000a.c
+	shougi.c
+	skyarmy.c
+	system24.c
+	thedeep.c
+	tourtabl.c
+	truco.c
+	unico.c
+	wallc.c
+
+    includes\
+	lethalj.h
+	realbrk.h
+	system24.h
+	thedeep.h
+	unico.h
+
+    machine\
+	6532riot.c
+	6532riot.h
+	chaknpop.c
+	system24.c
+	tmp68301.c
+	tmp68301.h
+
+    sndhrdw\
+	pbillian.c
+
+    sound\
+	tiaintf.c
+	tiaintf.h
+	tiasound.c
+	tiasound.h
+
+    vidhrdw\
+	bwing.c
+	chaknpop.c
+	fantland.c
+	groundfx.c
+	lethalj.c
+	metlclsh.c
+	pbillian.c
+	realbrk.c
+	sbugger.c
+	segaic24.c
+	segaic24.h
+	system24.c
+	thedeep.c
+	tia.c
+	tms9928a.c
+	tms9928a.h
+	truco.c
+	unico.c
+
+*********************************************************************
+Version 0.63b
+  
+  - \MAMEoX\MAMEoX_VC6.dsp
+    - Updated to support v0.63b changes
+    
+  - \MAMEoXLauncher\MAMEoXLauncher_VC6.dsp
+    - VC6 Project file MAMEoXLauncher required by main MAMEoX_VC.dsw
+      workspace file
+      
+  - \MAMEoX_VC6.dsw:
+    - Updated to add MAMEoXLauncher compile
+
+  - \MAMEoX\Sources\xbox_FileIO.c:
+    - Changed Helper_CreateOrOpenSystemPath() to allow the caller
+      to require that the directories checked be writeable (so that
+      nvram directories on a CD/DVD are not considered valid)
+
+  - \MAMEoXLauncher:
+    - Added directory with separate ROM list XBE
+
+  - \MAMEoX\Includes\ROMList.h:
+    - Moved to MAMEoXLauncher directory
+
+  - \MAMEoX\Includes\xbox_FileIO.h:
+    - Added DriverList define
+
+  - \MAMEoX\Includes\MAMEoX.h:
+    - Added various helper prototypes
+    - Added version string #define
+
+  - \MAMEoX\Sources\ROMList.cpp:
+    - Made left analog stick act like the DPAD
+      (usability testing)
+    - Moved to MAMEoXLauncher directory
+
+  - \MAMEoX\Sources\xbox_Main.cpp:
+    - Increased button sensitivity
+    - Switched Left Analog screen resize control to right analog 
+      (usability testing)
+    
+  - \MAMEoX\Sources\xbox_Sound.cpp:
+    - Reduced sound crackles
+
+  - \MAMEoX\Sources\MAMEoXUtil.cpp
+    - Added file
+    - Enabled cheats (untested)
+
+  - \MAMEoX\Docs\Readme.txt:
+    - Changed control notes to reflect new controls
+    - Changed installation notes to mention new dual XBEs
+
+
+
+*********************************************************************
+Version 0.62b
+  
+  - \MAME\MAME_VC6.dsp
+    - MAME project file for VC6 users
+    - File Added
+  
+  - \MAMEoX\MAMEoX_VC6.dsp
+    - MAMEoX project file for VC6 users
+    - File Added
+  
+  - \MAMEoX_VC6.dsw
+    - Main project workspace file for VC6 users
+    - file added
+
+  - \MAMEoX\Sources\xbox_Main.cpp:
+    - Added conditional compile code to make project VC6 friendly
+    - Modified functions main and Helper_RunRom
+    - Fixed: VectorWidth and VectorHeight ini option incorrectly use 
+             ColorDepth for values
+  
+  - \MAMEoX\Sources\xbox_Sound.c:
+    - Sound is now copied directly to the DSound write cursor, rather than
+      the MAMEoX one. This seems to resolve sound latency issues.
+
+  - \MAMEoX\Sources\xbox_Direct3DRenderer.cpp:
+    - Fixed: SWAPXY option improperly implemented for vector rendering
+  
+  - \MAMEoX\Sources\xbox_FileIO.h:
+    - Added AUDIOPATH for audio samples
+  
+  - \MAMEoX\Sources\xbox_FileIO.c:
+    - Fixed: Audio samples were redirected to the "ART" dir
+  
+  - \MAMEoX\Sources\xbox_JoystickMouse.c:
+    - Fixed a bug causing gamepad 3 buttons to be mapped
+      as gamepad 4 and vice versa.
+  
+  - \Docs\changelog.txt
+    - Added changelog
+
+
+*********************************************************************
+Version 0.61b
+	- No changelog
+

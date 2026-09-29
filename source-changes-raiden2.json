@@ -1,0 +1,67 @@
+[
+  {
+    "file": "MAMEoXtras 2026 Src/MAME/MAME.vcproj",
+    "before_sha256": "1c27784f16ae0c9626b0949575e2806b524c97168ec9bba758c0f391618e95a1",
+    "after_sha256": "01c664b760c1a7c8d24d50da3d3e7b615966145c2355c8150a56e4f5fe112424"
+  },
+  {
+    "file": "MAMEoXtras 2026 Src/MAME/src/drivers/raiden2.c",
+    "before_sha256": "7399dc952f1f3e9309e0b15a0d0df2bb42280500fe70ac4e3d779852a26ed291",
+    "after_sha256": "b2000c8d74862a145289c54e6387126ce843939a9be33c7d4b22bb2cc16d7299"
+  },
+  {
+    "file": "MAMEoXtras 2026 Src/MAME/src/drivers/raiden2_cop.inc",
+    "before_sha256": null,
+    "after_sha256": "43834ea3ef018f534cfa8a895d3a9f70cdc3c83a1aa6c4398e22f0d31dd4ffea"
+  },
+  {
+    "file": "MAMEoXtras 2026 Src/MAME/src/drivers/raiden2_debug.h",
+    "before_sha256": null,
+    "after_sha256": "4afc3f13852611e9617ea73a1cad6be3a1ade25c0f4d61aa907791781b458e29"
+  },
+  {
+    "file": "MAMEoXtras 2026 Src/MAME/src/drivers/raiden2_debug.inc",
+    "before_sha256": null,
+    "after_sha256": "05a36eeac752fc66f3b7cf439ea9073af3a3e5b698b637cba4ab0b0c7363b58b"
+  },
+  {
+    "file": "MAMEoXtras 2026 Src/MAME/src/drivers/raiden2_diag_api.h",
+    "before_sha256": null,
+    "after_sha256": "d0e16564e0b22ed8f3e9981e69c5f6ee149fd600f341b3a4a25d1980d1af66eb"
+  },
+  {
+    "file": "MAMEoXtras 2026 Src/MAME/src/drivers/raiden2_playable.inc",
+    "before_sha256": null,
+    "after_sha256": "793e01b2af897ce846fabe60913ca4700bf432ee7be5d9da9a903e14b27be5ec"
+  },
+  {
+    "file": "MAMEoXtras 2026 Src/MAME/src/drivers/raiden2_r2crypt.inc",
+    "before_sha256": null,
+    "after_sha256": "a5b3dd5e69cc978c88ceb8f9bb99c39e001a7bca476eefda22e04e4a6416200e"
+  },
+  {
+    "file": "MAMEoXtras 2026 Src/MAME/src/drivers/raiden2_sound.inc",
+    "before_sha256": null,
+    "after_sha256": "d4c2f8317f8271866a8de586d8b7683f8cd1ffe8a9c9d2f8af2a2b61112240c2"
+  },
+  {
+    "file": "MAMEoXtras 2026 Src/MAME/src/sndhrdw/seibu.c",
+    "before_sha256": "ff25492cbd91b8c2bc948ff58b4e3b6e909fe65e04d751967866b9b3fd51923b",
+    "after_sha256": "7871e74c2b881c720d3e0223d5a7526bfcba09e7567e2e5ef77cabf5c4cd959c"
+  },
+  {
+    "file": "MAMEoXtras 2026 Src/MAME/src/sndhrdw/seibu.h",
+    "before_sha256": "9b7c6c563a8a41ff27a1c083fe36c451fd79b62910cfaf0f23856b851cdced2e",
+    "after_sha256": "2715623f325d5ff32c55d64d30a07423be70fe69e98a9428ef40d063777714d0"
+  },
+  {
+    "file": "MAMEoXtras 2026 Src/MAME/src/tilemap.c",
+    "before_sha256": "b844263318b987f0d85dd58cf3a79e01de034344431ce2513dd1dec11274641a",
+    "after_sha256": "8e8030b5baf567ab1052ebb014ded01d17ac1d7b4c346363df645b159f4dfab6"
+  },
+  {
+    "file": "MAMEoXtras 2026 Src/MAMEoX/Includes/MAMEoX.h",
+    "before_sha256": "aa47f3413986184c8dfb76a9ef9a2a303d7af81708c61072c65659dc118e07d4",
+    "after_sha256": "97c06946d7e1b4fa4136bd5b8610f3dbe5861350472d9d9e24e839c81395e75b"
+  }
+]

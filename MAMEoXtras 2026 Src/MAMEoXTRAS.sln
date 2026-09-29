@@ -1,0 +1,77 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MAMEoXLauncher", "MAMEoXLauncher\MAMEoXLauncher.vcproj", "{BEC3062C-78B0-4B2D-BE06-4177F71981BE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6E91E5AE-9076-483E-9728-28D12259AA17} = {6E91E5AE-9076-483E-9728-28D12259AA17}
+		{731999BE-2D18-4EE5-9C18-0EEDD29B5821} = {731999BE-2D18-4EE5-9C18-0EEDD29B5821}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libsmb", "libsmb++\libsmb.vcproj", "{6E91E5AE-9076-483E-9728-28D12259AA17}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SharedResources", "SharedResources\SharedResources.vcproj", "{731999BE-2D18-4EE5-9C18-0EEDD29B5821}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MAME", "MAME\MAME.vcproj", "{68BEC3C4-1080-47F1-8C64-CF49ADD183A4}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MAMEoX", "MAMEoX\MAMEoX.vcproj", "{ECD98028-8A8F-4CD9-997B-BD87E6D313E7}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Debug_With_Retail_MAME = Debug_With_Retail_MAME
+		Profile = Profile
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{BEC3062C-78B0-4B2D-BE06-4177F71981BE}.Debug.ActiveCfg = Debug|Xbox
+		{BEC3062C-78B0-4B2D-BE06-4177F71981BE}.Debug.Build.0 = Debug|Xbox
+		{BEC3062C-78B0-4B2D-BE06-4177F71981BE}.Debug_With_Retail_MAME.ActiveCfg = Debug|Xbox
+		{BEC3062C-78B0-4B2D-BE06-4177F71981BE}.Debug_With_Retail_MAME.Build.0 = Debug|Xbox
+		{BEC3062C-78B0-4B2D-BE06-4177F71981BE}.Profile.ActiveCfg = Release|Xbox
+		{BEC3062C-78B0-4B2D-BE06-4177F71981BE}.Profile.Build.0 = Release|Xbox
+		{BEC3062C-78B0-4B2D-BE06-4177F71981BE}.Release.ActiveCfg = Release|Xbox
+		{BEC3062C-78B0-4B2D-BE06-4177F71981BE}.Release.Build.0 = Release|Xbox
+		{6E91E5AE-9076-483E-9728-28D12259AA17}.Debug.ActiveCfg = Debug|Xbox
+		{6E91E5AE-9076-483E-9728-28D12259AA17}.Debug.Build.0 = Debug|Xbox
+		{6E91E5AE-9076-483E-9728-28D12259AA17}.Debug_With_Retail_MAME.ActiveCfg = Release|Xbox
+		{6E91E5AE-9076-483E-9728-28D12259AA17}.Debug_With_Retail_MAME.Build.0 = Release|Xbox
+		{6E91E5AE-9076-483E-9728-28D12259AA17}.Profile.ActiveCfg = Release|Xbox
+		{6E91E5AE-9076-483E-9728-28D12259AA17}.Profile.Build.0 = Release|Xbox
+		{6E91E5AE-9076-483E-9728-28D12259AA17}.Release.ActiveCfg = Release|Xbox
+		{6E91E5AE-9076-483E-9728-28D12259AA17}.Release.Build.0 = Release|Xbox
+		{731999BE-2D18-4EE5-9C18-0EEDD29B5821}.Debug.ActiveCfg = Release|Xbox
+		{731999BE-2D18-4EE5-9C18-0EEDD29B5821}.Debug.Build.0 = Release|Xbox
+		{731999BE-2D18-4EE5-9C18-0EEDD29B5821}.Debug_With_Retail_MAME.ActiveCfg = Release|Xbox
+		{731999BE-2D18-4EE5-9C18-0EEDD29B5821}.Debug_With_Retail_MAME.Build.0 = Release|Xbox
+		{731999BE-2D18-4EE5-9C18-0EEDD29B5821}.Profile.ActiveCfg = Release|Xbox
+		{731999BE-2D18-4EE5-9C18-0EEDD29B5821}.Profile.Build.0 = Release|Xbox
+		{731999BE-2D18-4EE5-9C18-0EEDD29B5821}.Release.ActiveCfg = Release|Xbox
+		{731999BE-2D18-4EE5-9C18-0EEDD29B5821}.Release.Build.0 = Release|Xbox
+		{68BEC3C4-1080-47F1-8C64-CF49ADD183A4}.Debug.ActiveCfg = Debug|Xbox
+		{68BEC3C4-1080-47F1-8C64-CF49ADD183A4}.Debug.Build.0 = Debug|Xbox
+		{68BEC3C4-1080-47F1-8C64-CF49ADD183A4}.Debug_With_Retail_MAME.ActiveCfg = Debug|Xbox
+		{68BEC3C4-1080-47F1-8C64-CF49ADD183A4}.Debug_With_Retail_MAME.Build.0 = Debug|Xbox
+		{68BEC3C4-1080-47F1-8C64-CF49ADD183A4}.Profile.ActiveCfg = Profile|Xbox
+		{68BEC3C4-1080-47F1-8C64-CF49ADD183A4}.Profile.Build.0 = Profile|Xbox
+		{68BEC3C4-1080-47F1-8C64-CF49ADD183A4}.Release.ActiveCfg = Release|Xbox
+		{68BEC3C4-1080-47F1-8C64-CF49ADD183A4}.Release.Build.0 = Release|Xbox
+		{ECD98028-8A8F-4CD9-997B-BD87E6D313E7}.Debug.ActiveCfg = Debug|Xbox
+		{ECD98028-8A8F-4CD9-997B-BD87E6D313E7}.Debug.Build.0 = Debug|Xbox
+		{ECD98028-8A8F-4CD9-997B-BD87E6D313E7}.Debug_With_Retail_MAME.ActiveCfg = Debug_With_Retail_MAME|Xbox
+		{ECD98028-8A8F-4CD9-997B-BD87E6D313E7}.Debug_With_Retail_MAME.Build.0 = Debug_With_Retail_MAME|Xbox
+		{ECD98028-8A8F-4CD9-997B-BD87E6D313E7}.Profile.ActiveCfg = Profile|Xbox
+		{ECD98028-8A8F-4CD9-997B-BD87E6D313E7}.Profile.Build.0 = Profile|Xbox
+		{ECD98028-8A8F-4CD9-997B-BD87E6D313E7}.Release.ActiveCfg = Release|Xbox
+		{ECD98028-8A8F-4CD9-997B-BD87E6D313E7}.Release.Build.0 = Release|Xbox
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

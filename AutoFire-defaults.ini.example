@@ -1,0 +1,11 @@
+; Merge these keys into the existing [Input] section; 0=off, 1=on.
+; This file is a reference, not a replacement for MAMEoX.ini.
+[Input]
+AutoFireP1A = 0
+AutoFireP1B = 0
+AutoFireP2A = 0
+AutoFireP2B = 0
+AutoFireP3A = 0
+AutoFireP3B = 0
+AutoFireP4A = 0
+AutoFireP4B = 0

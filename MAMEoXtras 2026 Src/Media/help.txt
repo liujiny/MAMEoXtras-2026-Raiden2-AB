@@ -1,0 +1,116 @@
+============================================
+                 MAMEDoX Help
+============================================
+
+ UI Controls
+-------------------
+
+ The controls listed in brackets ([]) define
+the equivalent keyboard control for each
+function.
+
+A [Return]  - Play selected ROM
+B           - Toggle rom favorite status
+X [F1]      - Toggle this Help file
+Y [L Shift] - Hold to enter "Fast Jump"
+              mode. 
+              Using the DPAD up and down 
+              buttons, you can quickly skip
+              around in the ROM list. The
+              skip method is determined by
+              the current sort mode.
+BLACK [Space]  - Toggle between showing and
+                 hiding clones
+WHITE [Tab]    - Cycle through the ROM 
+                 listing modes (Verbose 
+                 List, Simple List, and 
+                 Detailed)
+START [Escape] - Toggle the start menu, from
+                 which you can remove ROMs,
+                 scan for new ROMs, switch 
+                 to the Options menu, the
+                 Lightgun calibration 
+                 screen, etc...
+BACK           - Cycle through sort options
+		 (Sort by name, manufacturer)
+		 etc.
+
+-- List Navigation -------------------------
+Left Trigger           - Move the ROM cursor
+                         up fast.
+Right Trigger          - Move the ROM cursor
+                         down fast.
+DPAD [Arrow Keys]      - Move the ROM cursor 
+                         up/down slowly.
+
+-- UI Screen Shots --------------------------
+Click Left Analog Stick [PrintScreen] - 
+        Click the stick to dump a screenshot
+        to the screenshots directory. Note
+        that this is really only for debugging
+        purposes, and there is no way to view
+        the screenshot within MAMEoX.
+
+-- Exiting MAMEoX --------------------------
+Left Trigger + Right Trigger + BLACK
+[Left Ctrl + Left Alt + Delete] -
+                Exit to the dashboard. 
+                You can also exit using the
+                option in the START menu.
+
+ 
+============================================
+
+ In Game Controls
+------------------
+Exit Game         - BACK and START
+On screen display - BACK and Right Analog
+                    button
+Toggle Crosshair  - BACK and Left Analog 
+                    button
+In-game Menu      - BACK and White button
+Pause             - BACK and Black button
+Reset ROM         - BACK, Left and Right
+                    triggers
+Load State        - BACK, Right Analog 
+                    button, and Left trigger
+Save State        - BACK, Right Analog 
+                    button, and Right 
+                    trigger
+Save Screenshot   - BACK, A button and B 
+                    button
+
+ Default Player Controls
+-------------------------
+Button 1       - A
+(normally fire)   
+Button 2       - X
+(normally Jump)   
+Button 3       - B
+Button 4       - Y
+Button 5       - Left Trigger
+(Rotate gun or Brake)  
+Button 6       - Right Trigger
+(Rotate Gun or Accelerate)   
+Button 7       - Left Analog button
+Button 8       - Right Analog button
+Button 9       - White
+Button 10      - Black
+Insert Credit  - Back
+P1 Start       - Start
+
+============================================
+Multi Screen Games
+------------------------
+Some games like darius load as a small slither across the centre of the TV screen
+to play these games Full Screen simply bring up the options menu and look for a setting called
+Aspect Ratio correction it's set to enabled by default change this to disabled to force games
+to load Full Screen
+
+==============================================
+Virtual Memory Manager
+--------------------------
+Or VMM for short All games were tested and VMM settings were added for those that needed them
+but if you find a game gets a out of memory error while loading 
+press start select options and look for VMM settings it's turned off by default 
+turn it On and your more or less guaranteed a game will load
