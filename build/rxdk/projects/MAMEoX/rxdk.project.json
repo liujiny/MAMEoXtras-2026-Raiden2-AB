@@ -1,0 +1,92 @@
+{
+  "name": "MAMEoX",
+  "configurations": {
+    "Release": {
+      "configuration": "release",
+      "sources": [
+        "../../source/MAMEoX/Sources/DebugLogger.cpp",
+        "../../source/MAMEoX/Sources/Gamepad.cpp",
+        "../../source/MAMEoX/Sources/GFilterManager.cpp",
+        "../../source/MAMEoX/Sources/GraphicsManager.cpp",
+        "../../source/MAMEoX/Sources/InputManager.cpp",
+        "../../source/MAMEoX/Sources/Keyboard.cpp",
+        "../../source/MAMEoX/Sources/Lightgun.cpp",
+        "../../source/MAMEoX/Sources/MAMEoXUtil.cpp",
+        "../../source/MAMEoX/Sources/scale2x.cpp",
+        "../../source/MAMEoX/Sources/SMBHandler.cpp",
+        "../../source/MAMEoX/Sources/System_IniFile.cpp",
+        "../../source/MAMEoX/Sources/VirtualMemoryManager.cpp",
+        "../../source/MAMEoX/Sources/XBESectionUtil.cpp",
+        "../../toolchain/samples/RxdkSamples/Common/Src/xbfont.cpp",
+        "../../source/MAMEoX/Sources/xbox_Direct3DRenderer.cpp",
+        "../../source/MAMEoX/Sources/xbox_Display.c",
+        "../../source/MAMEoX/Sources/xbox_FileIO.cpp",
+        "../../source/MAMEoX/Sources/xbox_Input.c",
+        "../../source/MAMEoX/Sources/xbox_JoystickMouse.c",
+        "../../source/MAMEoX/Sources/xbox_Keyboard.cpp",
+        "../../source/MAMEoX/Sources/xbox_Main.cpp",
+        "../../source/MAMEoX/Sources/xbox_Miscelaneous.c",
+        "../../source/MAMEoX/Sources/xbox_Network.cpp",
+        "../../source/MAMEoX/Sources/xbox_Sound.c",
+        "../../source/MAMEoX/Sources/xbox_Timing.c",
+        "../../toolchain/samples/RxdkSamples/Common/Src/xbresource.cpp",
+        "../../toolchain/samples/RxdkSamples/Common/Src/xbutil.cpp",
+        "../../source/MAMEoX/Sources/RxdkDsoundMath.c"
+      ],
+      "libraries": [
+        "libcompat.lib",
+        "libxgraphics.lib",
+        "libxapi.lib",
+        "libd3d8.lib",
+        "libd3dx8.lib",
+        "libdsound.lib",
+        "libkernel.lib",
+        "libxnet.lib",
+        "libc.lib",
+        "libcpp.lib"
+      ],
+      "imageBuild": {
+        "stackSize": 786432,
+        "noLibWarn": true,
+        "limitMemory": false,
+        "testId": "0x4D414D46",
+        "testName": "MAMEoX Util (Don't Run)",
+        "titleImage": "../../source/Media/mox-icon.xpr",
+        "defaultSaveImage": "../../source/Media/mox-icon.xpr",
+        "formatUtilityDrive": true,
+        "noPreload": [],
+        "utilityDriveClusterSize": 65536
+      },
+      "includePaths": [
+        "../../source/MAMEoX/Includes",
+        "../../source/MAME/src",
+        "../../source",
+        "../../toolchain/samples/RxdkSamples/Common/Include",
+        "../../source/libsmb++/src",
+        "../../source/ZLIB",
+        "../../source/SharedResources/Includes"
+      ],
+      "defines": [
+        "WIN32",
+        "NDEBUG",
+        "DEBUG_KEYBOARD"
+      ],
+      "cppStandard": "c++14",
+      "exceptions": true,
+      "compileFlags": [
+        "-include",
+        "build/rxdk/source/VCPPMame.h",
+        "-fno-strict-aliasing",
+        "-iquote",
+        "build/rxdk/source/MAME/src"
+      ],
+      "createIso": false,
+      "outputDir": "out-release",
+      "projectReferences": [
+        "../libsmb",
+        "../MAME"
+      ]
+    }
+  },
+  "defaultConfiguration": "Release"
+}

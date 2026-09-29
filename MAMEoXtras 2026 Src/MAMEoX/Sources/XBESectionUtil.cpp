@@ -57,7 +57,7 @@ static BOOL																	 g_driverSectionizerLoaded = TRUE;
 static BOOL																	 g_cpuSectionizerLoaded = TRUE;
 
 //= P R O T O T Y P E S ================================================
-extern "C" static void RegisterCPUSectionNames( void );
+extern "C" { static void RegisterCPUSectionNames( void ); }
 
 
 //= F U N C T I O N S ==================================================

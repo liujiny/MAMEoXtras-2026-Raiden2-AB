@@ -104,11 +104,7 @@ char* NetBIOSPacket::NBName(const char *name, bool groupFlag)
     	lenCur++;
     	ret[posCur++]='.';
     }
-#ifdef _WIN32
-    for (i=0; i<len2; i++)
-#else
-    for (int i=0; i<len2; i++)
-#endif
+for (int i=0; i<len2; i++)
     {
 //    	if ((sco[i] != '.') && (lenCur<63))
     	if (lenCur<63)
@@ -125,7 +121,7 @@ char* NetBIOSPacket::NBName(const char *name, bool groupFlag)
     }
 	ret[posLen]=lenCur;
 	ret[posCur]=0;	//end
-#ifdef _WIN32
+#if defined(_MSC_VER) && !defined(__clang__)
 	if (allocated) delete (void*)name;
 #else
 	if (allocated) delete name;

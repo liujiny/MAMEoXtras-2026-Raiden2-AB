@@ -28,7 +28,7 @@
 #ifndef USE_SAMBA
 
 #include "NameQueryInterface.h"
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 #ifdef _XBOX
 #include <xtl.h>
 #undef errno

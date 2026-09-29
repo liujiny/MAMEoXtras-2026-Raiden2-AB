@@ -16,7 +16,7 @@ Purpose:
 #include <algorithm>
 #include <string>
 
-#include <io.h>
+// File access uses osd_fopen/osd_fread, not CRT descriptor I/O.
 
 //= D E F I N E S ========================================
 #define strcasecmp		stricmp
@@ -266,7 +266,7 @@ BOOL CSystem_IniFile::GetValueString( const std::string &section,
 			if( strcasecmp( entryName.c_str(), CSystem_StringModifier::TokenStr( temp, '=' ).c_str() ) )
 				continue;
 
-			char *front = strchr( (*i).c_str(), '=' );
+			const char *front = strchr( (*i).c_str(), '=' );
 			if( !front )
 				return FALSE;
 

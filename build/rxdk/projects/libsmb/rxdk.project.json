@@ -1,0 +1,61 @@
+{
+  "name": "libsmb",
+  "type": "library",
+  "configurations": {
+    "Release": {
+      "configuration": "release",
+      "sources": [
+        "../../source/libsmb++/src/CharCnv.cpp",
+        "../../source/libsmb++/src/DES.cpp",
+        "../../source/libsmb++/src/FileManagementInterface.cpp",
+        "../../source/libsmb++/src/IODescriptors.cpp",
+        "../../source/libsmb++/src/IOTypes.cpp",
+        "../../source/libsmb++/src/NameQueryInterface.cpp",
+        "../../source/libsmb++/src/NameServicePacket.cpp",
+        "../../source/libsmb++/src/NativeNMB.cpp",
+        "../../source/libsmb++/src/NBHostCache.cpp",
+        "../../source/libsmb++/src/NetBIOSPacket.cpp",
+        "../../source/libsmb++/src/NMBIO.cpp",
+        "../../source/libsmb++/src/Options.cpp",
+        "../../source/libsmb++/src/Resolve.cpp",
+        "../../source/libsmb++/src/SambaLink.cpp",
+        "../../source/libsmb++/src/SambaNMB.cpp",
+        "../../source/libsmb++/src/SessionIO.cpp",
+        "../../source/libsmb++/src/SessionPacket.cpp",
+        "../../source/libsmb++/src/SMBIO.cpp",
+        "../../source/libsmb++/src/SMBPacket.cpp",
+        "../../source/libsmb++/src/types.cpp",
+        "../../source/libsmb++/src/Util.cpp",
+        "../../source/libsmb++/src/XBoxGetHost.cpp"
+      ],
+      "libraries": [
+        "libc.lib",
+        "libcpp.lib",
+        "libkernel.lib"
+      ],
+      "includePaths": [
+        "../../source/MAME/src",
+        "../../source/MAMEoX/Includes",
+        "../../source",
+        "../../source/ZLIB",
+        "../../source/SharedResources/Includes"
+      ],
+      "defines": [
+        "WIN32",
+        "NDEBUG"
+      ],
+      "cppStandard": "c++14",
+      "exceptions": false,
+      "compileFlags": [
+        "-include",
+        "build/rxdk/source/VCPPMame.h",
+        "-fno-strict-aliasing",
+        "-iquote",
+        "build/rxdk/source/MAME/src"
+      ],
+      "createIso": false,
+      "outputDir": "out-release"
+    }
+  },
+  "defaultConfiguration": "Release"
+}

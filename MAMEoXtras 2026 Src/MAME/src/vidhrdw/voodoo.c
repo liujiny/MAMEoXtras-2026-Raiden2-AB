@@ -19,8 +19,25 @@
 #define TRUNC_TO_INT(f) (float) (floor(f))
 #else
 #include <float.h>
+#if defined(__clang__) && defined(_XBOX)
+static unsigned short rxdk_voodoo_set_fpu(void)
+{
+    unsigned short saved, adjusted;
+    __asm__ __volatile__("fnstcw %0" : "=m"(saved));
+    adjusted = (unsigned short)((saved & ~0x0f00u) | 0x0c00u);
+    __asm__ __volatile__("fldcw %0" : : "m"(adjusted) : "memory");
+    return saved;
+}
+static void rxdk_voodoo_restore_fpu(unsigned short saved)
+{
+    __asm__ __volatile__("fldcw %0" : : "m"(saved) : "memory");
+}
+#define SETUP_FPU() { unsigned short oldfpu = rxdk_voodoo_set_fpu()
+#define RESTORE_FPU() rxdk_voodoo_restore_fpu(oldfpu); }
+#else
 #define SETUP_FPU() { int oldfpu = _controlfp(_RC_CHOP/*_RC_DOWN*/ | _PC_24, _MCW_RC | _MCW_PC)
 #define RESTORE_FPU() _controlfp(oldfpu, _MCW_RC | _MCW_PC); }
+#endif
 #define TRUNC_TO_INT(f) ((int)(f))
 #endif
 

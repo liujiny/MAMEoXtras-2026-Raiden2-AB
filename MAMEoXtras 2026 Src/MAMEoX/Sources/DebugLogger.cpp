@@ -5,7 +5,7 @@
 #include <xbdm.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <io.h>
+// No CRT descriptor I/O is used by this translation unit.
 #include <list>
 
 #include "DebugLogger.h"

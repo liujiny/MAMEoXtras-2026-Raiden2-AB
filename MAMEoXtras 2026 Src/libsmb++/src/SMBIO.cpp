@@ -32,7 +32,7 @@ nicolas.brodu@free.fr
 
 #include <errno.h>
 #undef errno    // need the error codes but not the variable
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 #include <time.h>
 #ifdef _XBOX
 #include <xtl.h>
@@ -54,7 +54,7 @@ nicolas.brodu@free.fr
 #include <ctype.h>
 #include <stdlib.h>     // for qsort
 #include <string.h>
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 #define getuid() 500
 #define getgid() 500
 //#define strcasecmp xboxstricmp    // Defined in MAMEoX.h
@@ -1164,7 +1164,7 @@ int SMBIO::readRaw(int fd, void *buf, uint32 count)
 		}
 		if (p1)
 			delete p1;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 		queue=recvfrom(sock, (char*)rawdata, 65535, 0, 0, 0);//MSG_PEEK, 0, 0);
 #else
 		queue=recvfrom(sock, rawdata, 65535, 0, 0, 0);//MSG_PEEK, 0, 0);
@@ -1201,7 +1201,7 @@ int SMBIO::readRaw(int fd, void *buf, uint32 count)
  
 		while (length>0) // wait for packet completion
 		{
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 			queue=recvfrom(sock, (char *)rawdata, length, 0, 0, 0);//MSG_PEEK, 0, 0);
 #else
 			queue=recvfrom(sock, rawdata, length, 0, 0, 0);//MSG_PEEK, 0, 0);
@@ -1504,7 +1504,7 @@ int SMBIO::writeRaw(int fd, void *buf, uint32 count)
 		do {
 			// try to send all data in one go !
 			memcpy(rawdata+4, (uint8*)buf+cpt, maxTransfert);
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 			int sent=::send(sock, (const char *)rawdata, 4+maxTransfert, 0)-4; // remove NetBIOS header
 #else
 			int sent=::write(sock, rawdata, 4+maxTransfert)-4; // remove NetBIOS header
@@ -3375,8 +3375,8 @@ SMBdirent *SMBIO::readdir(int dirdesc)
 					if (!result) {flag++; trans=new SMBIO::TransactInfo;}
 					else if (result->paramLength<8) {delete result; flag++; trans=new SMBIO::TransactInfo;}
 					else flag=100;
-#ifdef _WIN32
-					if ((flag>3) & (flag<100)) _sleep(1); // wait a little, just in case...
+#if defined(_WIN32) || defined(_XBOX)
+					if ((flag>3) & (flag<100)) Sleep(1); // wait a little, just in case...
 #else
 					if ((flag>3) & (flag<100)) sleep(1); // wait a little, just in case...
 #endif
@@ -3433,11 +3433,7 @@ SMBdirent *SMBIO::readdir(int dirdesc)
 			info->cache=new uint8[info->clen]; // new cache shouldn't be too
 			info->cpos=info->cache+4;          // large
 			
-#ifdef _WIN32
-			for (i=0; i<result->dataLength; ) {
-#else
-				for (int i=0; i<result->dataLength; ) {
-#endif
+for (int i=0; i<result->dataLength; ) {
 					info->cache[0]=result->data[i+0]; // search key : will be
 					info->cache[1]=result->data[i+1]; // erased except for last
 					info->cache[2]=result->data[i+2]; // entry => booo, I'm too lazy

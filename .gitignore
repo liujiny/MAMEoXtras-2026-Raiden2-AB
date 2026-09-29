@@ -1,5 +1,25 @@
 # Build outputs and distributable binaries
-/build/
+/build/*
+!/build/rxdk/
+/build/rxdk/*
+!/build/rxdk/README.md
+!/build/rxdk/setup_rxdk.py
+!/build/rxdk/prepare_source.py
+!/build/rxdk/rebuild_release.py
+!/build/rxdk/compile_parallel.py
+!/build/rxdk/build_projects.py
+!/build/rxdk/package_release.py
+!/build/rxdk/projects/
+/build/rxdk/projects/*
+!/build/rxdk/projects/*/
+/build/rxdk/projects/*/*
+!/build/rxdk/projects/*/rxdk.project.json
+!/build/rxdk/probes/
+/build/rxdk/probes/*
+!/build/rxdk/probes/run_vmm_seh_test.py
+!/build/rxdk/probes/check_dsound_abi.py
+!/build/rxdk/probes/vmm_seh_native_test.cpp
+!/build/rxdk/probes/dsound_math_abi_test.c
 /dist/
 *.xbe
 *.obj

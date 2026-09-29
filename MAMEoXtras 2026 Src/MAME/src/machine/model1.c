@@ -177,7 +177,7 @@ static float ram_get_f(void)
 	return u2f(ram_data[ram_scanadr++]);
 }
 
-static void fadd(void)
+static void tgp_fadd(void)
 {
 	float a = fifoin_pop_f();
 	float b = fifoin_pop_f();
@@ -187,7 +187,7 @@ static void fadd(void)
 	next_fn();
 }
 
-static void fsub(void)
+static void tgp_fsub(void)
 {
 	float a = fifoin_pop_f();
 	float b = fifoin_pop_f();
@@ -198,7 +198,7 @@ static void fsub(void)
 	next_fn();
 }
 
-static void fmul(void)
+static void tgp_fmul(void)
 {
 	float a = fifoin_pop_f();
 	float b = fifoin_pop_f();
@@ -208,7 +208,7 @@ static void fmul(void)
 	next_fn();
 }
 
-static void fdiv(void)
+static void tgp_fdiv(void)
 {
 	float a = fifoin_pop_f();
 	float b = fifoin_pop_f();
@@ -1656,10 +1656,10 @@ struct function {
 };
 
 static struct function ftab_vf[] = {
-	{   0, fadd,            2 },
-	{   1, fsub,            2 },
-	{   2, fmul,            2 },
-	{   3, fdiv,            2 },
+	{   0, tgp_fadd,            2 },
+	{   1, tgp_fsub,            2 },
+	{   2, tgp_fmul,            2 },
+	{   3, tgp_fdiv,            2 },
 	{   5, matrix_push,     0 },
 	{   6, matrix_pop,      0 },
 	{   7, matrix_write,   12 },
@@ -1734,10 +1734,10 @@ static struct function ftab_vf[] = {
 //   f15_swa
 
 static struct function ftab_swa[] = {
-	{   0, fadd,            2 },
-	{   1, fsub,            2 },
-	{   2, fmul,            2 },
-	{   3, fdiv,            2 },
+	{   0, tgp_fadd,            2 },
+	{   1, tgp_fsub,            2 },
+	{   2, tgp_fmul,            2 },
+	{   3, tgp_fdiv,            2 },
 	{   5, matrix_push,     0 },
 	{   6, matrix_pop,      0 },
 	{   7, matrix_write,   12 },

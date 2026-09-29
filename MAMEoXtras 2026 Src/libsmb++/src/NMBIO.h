@@ -40,7 +40,7 @@ protected:
 	struct sockaddr_in *socknetaddr; // parameters of the connection
 //	static uint32 NBNS; // IP of a NetBIOS name server
 	// name query to the NBNS
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	NBHostEnt *askNBNS(const char *name, bool groupFlag=false);
 #else
 	struct NBHostEnt *askNBNS(const char *name, bool groupFlag=false);
@@ -69,7 +69,7 @@ public:
 	// In case of a group name, only the members IP are valid
 	// In the future, the list of the member names will be
 	// returned as well (see NBHostEnt class)
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	NBHostEnt *gethostbyname(const char *name, bool groupFlag=false);
 	// doesn't work !
 	NBHostEnt *gethostbyaddr(uint32 IP, bool groupFlag=false);

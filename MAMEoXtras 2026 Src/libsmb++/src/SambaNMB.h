@@ -28,7 +28,7 @@
 #ifdef USE_SAMBA
 
 #include "NameQueryInterface.h"
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 #include <winsock2.h>
 #else
 #include <netdb.h>

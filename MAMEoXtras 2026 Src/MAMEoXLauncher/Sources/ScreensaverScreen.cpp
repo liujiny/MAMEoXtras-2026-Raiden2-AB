@@ -54,7 +54,7 @@ void CScreensaverScreen::Draw( BOOL clearScreen, BOOL flipOnCompletion )
 	if( !g_loadedSkin )
 		return;
 
-  static textMessageX = 0, textMessageY = 0;
+  static int textMessageX = 0, textMessageY = 0;
   static UINT64 lastTime = 0;
 	UINT64 curTime = osd_cycles();
 	UINT64 elapsedTime = curTime - lastTime;

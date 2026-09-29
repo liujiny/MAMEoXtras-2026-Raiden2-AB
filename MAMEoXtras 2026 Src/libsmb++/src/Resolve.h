@@ -22,7 +22,7 @@
 #define RESOLVE_H
 #include <time.h>
 #include <sys/types.h> // needed on FreeBSD
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 #ifdef _XBOX
 #include <xtl.h>
 #undef errno

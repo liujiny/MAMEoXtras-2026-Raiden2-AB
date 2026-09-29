@@ -1977,7 +1977,7 @@ static int t90_execute(int cycles)
 	return cycles - t90_ICount;
 }
 
-static void t90_reset(void)
+static void t90_reset(void *param)
 {
 	T90.irq_state = 0;
 	T90.irq_mask = 0;
@@ -2631,7 +2631,7 @@ static WRITE8_HANDLER( t90_internal_registers_w )
 	T90.internal_registers[offset] = data;
 }
 
-static void t90_init(int index, int clock, const void *config, int (*irqcallback)(int))
+static void t90_init(void)
 {
 	int i, p;
 
@@ -2662,7 +2662,7 @@ static void t90_init(int index, int clock, const void *config, int (*irqcallback
 	}
 
 	memset(&T90, 0, sizeof(T90));
-	T90.irq_callback = irqcallback;
+	T90.irq_callback = NULL; /* This core never consumes the legacy callback field. */
 
 	T90.timer_freq = TIME_TO_CYCLES(cpu_getactivecpu(), 1) / 4 / 2;
 

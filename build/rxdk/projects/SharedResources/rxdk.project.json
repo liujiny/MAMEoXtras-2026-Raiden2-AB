@@ -1,0 +1,21 @@
+{
+  "name": "SharedResources",
+  "type": "library",
+  "configurations": {
+    "Release": {
+      "configuration": "release",
+      "sources": [
+        "../../source/SharedResources/Sources/Dummy.cpp"
+      ],
+      "libraries": [
+        "libc.lib",
+        "libcpp.lib",
+        "libkernel.lib"
+      ],
+      "defines": [
+        "_LIB"
+      ]
+    }
+  },
+  "defaultConfiguration": "Release"
+}

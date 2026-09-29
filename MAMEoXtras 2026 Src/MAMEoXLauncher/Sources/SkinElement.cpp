@@ -8,6 +8,7 @@
 //= I N C L U D E S ====================================================
 #include "SkinElement.h"
 #include "DebugLogger.h"
+#include <strings.h>
 
 
 //= D E F I N E S =====================================================
@@ -77,9 +78,9 @@ RECT CSkinElement::StringToRect( const CStdString &rectString )
 			delim = strpbrk( next, g_skinDelimiters );
 		}
 
-		if( !stricmp( value, "unbounded" ) )
+		if( !strcasecmp( value, "unbounded" ) )
 			values[i] = VALUE_UNBOUNDED;
-		else if( !stricmp( value, "auto" ) )
+		else if( !strcasecmp( value, "auto" ) )
 			values[i] = VALUE_AUTO;
 		else
 			sscanf( value, "%d", &values[i] );
@@ -122,7 +123,7 @@ POINT CSkinElement::StringToPoint( const CStdString &pointString )
 			delim = strpbrk( next, g_skinDelimiters );
 		}
 
-		if( !stricmp( value, "auto" ) )
+		if( !strcasecmp( value, "auto" ) )
 			values[i] = VALUE_AUTO;
 		else
 			sscanf( value, "%d", &values[i] );

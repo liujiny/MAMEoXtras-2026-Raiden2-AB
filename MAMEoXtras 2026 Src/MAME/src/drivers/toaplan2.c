@@ -382,8 +382,8 @@ void batsugun_okisnd_w(int data);
 
 data8_t m_cmdavailable;
 
-READ_HANDLER(tekipaki_soundlatch_r);
-READ_HANDLER(tekipaki_cmdavailable_r);
+READ8_HANDLER(tekipaki_soundlatch_r);
+READ8_HANDLER(tekipaki_cmdavailable_r);
 
 /***************************************************************************
   Initialisation handlers

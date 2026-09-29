@@ -208,9 +208,9 @@ BOOL CSkin::LoadSkin( CStdString *errorReport )
 
 		// PARSEITEM
 	#define PARSEITEM( id, __elementType )  { \
-			##__elementType temp; \
+			__elementType temp; \
 			if( temp.ParseINI( iniFile, ElementIDToINISection( id ) ) ) { \
-				m_spriteElementArray[id] = new __elementType##( temp );	\
+				m_spriteElementArray[id] = new __elementType( temp );	\
 				PRINTMSG(( T_INFO, "Created " #id " of type " #__elementType "!" )); \
 			} \
 	}
@@ -218,36 +218,36 @@ BOOL CSkin::LoadSkin( CStdString *errorReport )
 
 		// PARSESUBITEM
 	#define PARSESUBITEM( id, __elementType, parentIniEntry )  { \
-			##__elementType temp; \
+			__elementType temp; \
 			if( temp.ParseINI( iniFile, ElementIDToINISection( id ), parentIniEntry ) ) { \
-				m_spriteElementArray[id] = new __elementType##( temp );	\
+				m_spriteElementArray[id] = new __elementType( temp );	\
 				PRINTMSG(( T_INFO, "Created " #id " of type " #__elementType "!" )); \
 			} \
 	}
 
 		// PARSESUBITEMEX
 	#define PARSESUBITEMEX( id, __elementType, constructorArg, parentIniEntry )  { \
-			##__elementType temp( constructorArg ); \
+			__elementType temp( constructorArg ); \
 			if( temp.ParseINI( iniFile, ElementIDToINISection( id ), parentIniEntry ) ) { \
-				m_spriteElementArray[id] = new __elementType##( temp );	\
+				m_spriteElementArray[id] = new __elementType( temp );	\
 				PRINTMSG(( T_INFO, "Created " #id " of type " #__elementType "!" )); \
 			} \
 	}
 
 		// PARSELINKEDITEM
 	#define PARSELINKEDITEM( id, __elementType, parentIniEntry, parentID )  { \
-			##__elementType temp; \
+			__elementType temp; \
 			if( temp.ParseINI( iniFile, ElementIDToINISection( id ), parentIniEntry, parentID ) ) { \
-				m_spriteElementArray[id] = new __elementType##( temp );	\
+				m_spriteElementArray[id] = new __elementType( temp );	\
 				PRINTMSG(( T_INFO, "Created " #id " of type " #__elementType "!" )); \
 			} \
 	}
 
 		// PARSEICON
 	#define PARSEICON( id, __elementType, fullIniEntry, iconID )  { \
-			##__elementType temp( iconID ); \
+			__elementType temp( iconID ); \
 			if( temp.ParseINI( iniFile, ElementIDToINISection( id ), fullIniEntry ) ) { \
-				m_spriteElementArray[id] = new __elementType##( temp );	\
+				m_spriteElementArray[id] = new __elementType( temp );	\
 				PRINTMSG(( T_INFO, "Created " #id " of type " #__elementType "!" )); \
 			} \
 	}

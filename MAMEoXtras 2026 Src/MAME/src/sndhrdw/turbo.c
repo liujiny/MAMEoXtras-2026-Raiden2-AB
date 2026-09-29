@@ -22,7 +22,7 @@
 static UINT8 osel, bsel;
 
 static UINT8 turbo_accel;
-static UINT8 turbo_speed;
+/* turbo_speed is shared with the tachometer; defined in machine/turbo.c. */
 
 static UINT8 buckrog_hit;
 static UINT8 buckrog_myship;

@@ -32,7 +32,7 @@
 #ifndef USE_SAMBA
 
 #include "NBHostCache.h"
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 #include <time.h>
 //#define strcasecmp xboxstricmp
 #else

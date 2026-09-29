@@ -993,7 +993,7 @@ static BOOL Helper_LoadDriverInfoFile( void )
     } \
     else \
     { \
-    if( !(_data__) && !((_data__) = (_dataType__##*)malloc( (_dataSize__) )) ) \
+    if( !(_data__) && !((_data__) = (_dataType__ *)malloc( (_dataSize__) )) ) \
       { \
         if( g_driverData ) \
           free( g_driverData ); \
@@ -1541,11 +1541,11 @@ static BOOL Helper_CopySystemFilesFromDVD( LPDIRECT3DDEVICE8 pD3DDevice )
       } \
     }
 
-  COPYDIR( g_FileIOConfig.m_artPath );
-  COPYDIR( g_FileIOConfig.m_generalPath );
-  COPYDIR( g_FileIOConfig.m_HiScorePath );
-  COPYDIR( g_FileIOConfig.m_audioPath );
-  COPYDIR( g_FileIOConfig.m_screenshotPath );
+  COPYDIR( g_FileIOConfig.m_artPath.c_str() );
+  COPYDIR( g_FileIOConfig.m_generalPath.c_str() );
+  COPYDIR( g_FileIOConfig.m_HiScorePath.c_str() );
+  COPYDIR( g_FileIOConfig.m_audioPath.c_str() );
+  COPYDIR( g_FileIOConfig.m_screenshotPath.c_str() );
 
   return TRUE;
 }

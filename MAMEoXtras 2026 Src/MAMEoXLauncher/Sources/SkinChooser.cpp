@@ -62,9 +62,9 @@ BOOL CSkinChooser::FindSkins( void )
 		{
 			osd_fclose( file );
 
-			CSystem_IniFile iniFile( iniFile.c_str() );
-			CStdString author = iniFile.GetProfileString( "Metadata", "Author", "" );
-			CStdString description = iniFile.GetProfileString( "Metadata", "Description", "" );
+			CSystem_IniFile parsedIni( iniFile.c_str() );
+			CStdString author = parsedIni.GetProfileString( "Metadata", "Author", "" );
+			CStdString description = parsedIni.GetProfileString( "Metadata", "Description", "" );
 
 			PRINTMSG(( T_INFO, "Skin %s found!", basepath.c_str() ));
 

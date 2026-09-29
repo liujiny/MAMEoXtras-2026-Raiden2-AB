@@ -707,10 +707,14 @@ void Helper_CreateDirectoryPath( const char *path, BOOL has_filename )
 	char *sep;
 	PRINTMSG(( T_TRACE, "Helper_CreateDirectoryPath" ));
 	
-	if( !path )
+	if( !path || !*path )
 		return;
 
-	sep = strrchr( path, '\\' );
+    // Own the writable string instead of casting away the caller's const.
+    std::string directory(path);
+    char *mutablePath = &directory[0];
+    path = mutablePath;
+	sep = strrchr( mutablePath, '\\' );
 
 		// if there's still a separator, and it's not the root, nuke it and recurse
 	if( sep && sep > path && sep[-1] != '\\' )
@@ -726,7 +730,7 @@ void Helper_CreateDirectoryPath( const char *path, BOOL has_filename )
 
 		// if the path already exists, we're done
 	attributes = GetFileAttributes(path);
-	if( attributes >= 0 )
+	if( attributes != INVALID_FILE_ATTRIBUTES )
 		return;
 
 		// create the path

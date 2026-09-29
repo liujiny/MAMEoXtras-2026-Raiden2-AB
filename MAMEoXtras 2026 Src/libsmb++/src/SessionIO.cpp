@@ -33,7 +33,7 @@
 // Network related includes
 // I haven't checked for portability yet
 #include <sys/types.h>   // must be included before in.h on FreeBSD
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 #include <time.h>
 #ifdef _XBOX
 #include <xtl.h>
@@ -117,7 +117,7 @@ int SessionIO::connect(uint32 IP, uint16 p)
 	
 	port=p;
 	
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	if (sock) closesocket(sock);	// There was already a connection
 #else
 	if (sock) close(sock);	// There was already a connection
@@ -144,7 +144,7 @@ int SessionIO::connect(uint32 IP, uint16 p)
 	
 	int toggle=1;
 	// David: the (void*) cast is required for Solaris
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*)&toggle, sizeof(int));
 #else
 	setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (void*)&toggle, sizeof(int));
@@ -174,7 +174,7 @@ int SessionIO::send(SessionPacket *p)
 		return -1;
 	}
 	int ret=p->getLength();
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	if (::send(sock,(char*)packet,p->getLength(),0) < 0)
 #else
 	if (write(sock,packet,p->getLength()) < 0)
@@ -209,7 +209,7 @@ SessionPacket *SessionIO::receive()
 		errno=SESSION_ERROR_CALLED_NOT_PRESENT;
 		return 0;
 	}
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	::recv(sock,(char *)&type,1,0);
 #else
 	read(sock,&type,1);
@@ -234,7 +234,7 @@ SessionPacket *SessionIO::receive()
 		errno=SESSION_ERROR; 
 		return 0;
 	}
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	if (recv(sock,(char*)lengthField,3,0)<0) 
 	{
 		PRINTMSG(( T_INFO, "SessionIO::receive recv() failed" ));
@@ -270,7 +270,7 @@ SessionPacket *SessionIO::receive()
 				delete data;
 				return 0;
 			}
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 			if ((numRead=recv(sock,(char*)(data+alreadyRead),length,0))>0)
 #else
 			if ((numRead=read(sock,data+alreadyRead,length))>0)
@@ -349,7 +349,7 @@ void SessionIO::closeSession()
 {
 	// There doesn't seem to be anything in the protocol
 	// to tell the called host that we leave
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	if (sock) closesocket(sock);
 #else
 	if (sock) close(sock);

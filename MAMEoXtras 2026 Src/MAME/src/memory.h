@@ -6,8 +6,8 @@
 
 ***************************************************************************/
 
-#ifndef _MEMORY_H
-#define _MEMORY_H
+#ifndef MAMEOX_CPU_MEMORY_H
+#define MAMEOX_CPU_MEMORY_H
 
 #include "osd_cpu.h"
 #include <stddef.h>

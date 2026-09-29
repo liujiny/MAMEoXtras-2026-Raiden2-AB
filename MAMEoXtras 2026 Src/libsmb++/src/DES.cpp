@@ -392,15 +392,7 @@ void DES::setKey(const unsigned char* k)
 
 	// Initial permutation of the key
 
-#ifdef _WIN32
-
-	for (i=0; i<28; i++) {
-
-#else
-
-	for (int i=0; i<28; i++) {
-
-#endif
+for (int i=0; i<28; i++) {
 
 		C[i]=key[PC1[i]];
 
@@ -414,15 +406,7 @@ void DES::setKey(const unsigned char* k)
 
 	// calculate the 16 keys
 
-#ifdef _WIN32
-
-	for (i=0; i<16; i++) {
-
-#else
-
-	for (int i=0; i<16; i++) {
-
-#endif
+for (int i=0; i<16; i++) {
 
 		// do LSHIFT[i] shifts
 
@@ -458,15 +442,7 @@ void DES::setKey(const unsigned char* k)
 
 		// new permutation => give key
 
-#ifdef _WIN32
-
-		for (j=0; j<48; j++) {
-
-#else
-
-		for (int j=0; j<48; j++) {
-
-#endif
+for (int j=0; j<48; j++) {
 
 			K[i][j]=concat[PC2[j]];
 

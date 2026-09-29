@@ -28,7 +28,7 @@
 */
 #include "Resolve.h"
 #include "strtool.h"
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 #ifdef _XBOX
 #include <xtl.h>
 #undef errno
@@ -119,7 +119,7 @@ Resolve::Resolve()
 	rethostent.h_aliases = 0;
 	rethostent.h_addrtype = AF_INET;
 	rethostent.h_length = 4;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	rethostent.h_addr_list = new char*[2];
 #else
 	rethostent.h_addr_list = new (char*)[2];

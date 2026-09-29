@@ -488,7 +488,9 @@ inline const Type& SSMAX(const Type& arg1, const Type& arg2)
 			#else
 				typedef char		TCHAR;
 			#endif
+			#ifndef _XOBJBASE_H_
 			typedef wchar_t			OLECHAR;
+			#endif // The Xbox SDK already supplies OLECHAR.
 
 		#endif	// #ifndef _WIN32
 

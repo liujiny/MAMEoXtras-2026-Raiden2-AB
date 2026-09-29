@@ -10,6 +10,10 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <crtdbg.h>
+#include <strings.h>
+#if defined(__clang__) && defined(_XBOX)
+#include "RxdkVmmSeh.h"
+#endif
 
 #ifdef _PROFILER
   #include <xbdm.h>
@@ -321,12 +325,20 @@ void __cdecl main( void )
       // Sort the game drivers and run the ROM
     //qsort( drivers, mameoxLaunchData->m_totalMAMEGames, sizeof(drivers[0]), compareDriverNames );
 
+#if defined(__clang__) && defined(_XBOX)
+    {
+        mameox_rxdk::VmmScope vmmExceptions(ExceptionFilter);
+        InitVirtualMem(mameoxLaunchData->m_gameIndex);
+        Helper_RunRom(mameoxLaunchData->m_gameIndex);
+    }
+#else
 	__try {
 		InitVirtualMem( mameoxLaunchData->m_gameIndex  );
 		Helper_RunRom( mameoxLaunchData->m_gameIndex );
     } __except(ExceptionFilter(GetExceptionInformation())) {
         //handle all other bad exceptions here
     };
+#endif
 
       // NOTE: The driver list is invalid after Helper_RunRom, so don't do anything with it
       // until the MAMEoX.xbe utility has been rebooted.
@@ -348,14 +360,14 @@ static BOOL Helper_IsBIOS( const GameDriver *drv )
     return FALSE;
 
     // The list of bios drivers from www.mame.dk
-  if( !stricmp( drv->name, "decocass" ) ||
-      !stricmp( drv->name, "cvs" ) ||
-      !stricmp( drv->name, "neogeo" ) ||
-      !stricmp( drv->name, "pgm" ) ||
-      !stricmp( drv->name, "playch10" ) ||
-      !stricmp( drv->name, "stvbios" ) ||
-      !stricmp( drv->name, "skns" ) ||
-      !stricmp( drv->name, "konamigx" ) )
+  if( !strcasecmp( drv->name, "decocass" ) ||
+      !strcasecmp( drv->name, "cvs" ) ||
+      !strcasecmp( drv->name, "neogeo" ) ||
+      !strcasecmp( drv->name, "pgm" ) ||
+      !strcasecmp( drv->name, "playch10" ) ||
+      !strcasecmp( drv->name, "stvbios" ) ||
+      !strcasecmp( drv->name, "skns" ) ||
+      !strcasecmp( drv->name, "konamigx" ) )
     return TRUE;
 
   return FALSE;

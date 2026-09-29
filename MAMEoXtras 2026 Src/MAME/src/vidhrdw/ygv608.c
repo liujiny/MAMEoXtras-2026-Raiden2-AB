@@ -517,7 +517,7 @@ VIDEO_START( ygv608 )
 	tilemap_A = NULL;
 	tilemap_B = NULL;
 
-	ygv608_exit(1);
+	ygv608_exit();
 
 	return 0;
 }

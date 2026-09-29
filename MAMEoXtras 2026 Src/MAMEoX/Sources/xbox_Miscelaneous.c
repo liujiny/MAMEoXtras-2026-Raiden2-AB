@@ -32,7 +32,7 @@
 
 VIRTMEM_LOC g_virtualmem_locs[NUM_VIRTMEM] ;
 HANDLE g_vmemfile ;
-DWORD g_pagefileSize ;
+unsigned int g_pagefileSize ;
 unsigned int g_vmemThreshold = VMEM_DEFAULT_THRESHOLD;
 unsigned int g_vmemCommitSize ;
 unsigned int g_vmemDistribute ;
@@ -399,7 +399,7 @@ void* AllocateVirtualMemory( unsigned int size )
 
 			if ( allfree )
 			{
-				FreeVirtualMemory( g_virtualmem_locs[i].baseAddress ) ;
+				FreeVirtualMemory( (void *)g_virtualmem_locs[i].baseAddress ) ;
 			}
 			
 		}
@@ -827,14 +827,14 @@ int osd_display_loading_rom_message( const char *name, struct rom_load_data *rom
 	{
 		wcscpy( title, L"Loading \"" );
 		mbstowcs( &title[wcslen(title)], name, 32 );
-		swprintf( &title[wcslen(title)], L"\" (%d/ %d)", romdata->romsloaded, romdata->romstotal );
+		swprintf( &title[wcslen(title)], sizeof(title)/sizeof(title[0]) - wcslen(title), L"\" (%d/ %d)", romdata->romsloaded, romdata->romstotal );
 	}
 	else
 		wcscpy( title, L"Loading complete!" );
 
 
   GlobalMemoryStatus( &memStatus );
-  swprintf( memory, L"Available: %lu / Total: %lu", memStatus.dwAvailPhys, memStatus.dwTotalPhys );
+  swprintf( memory, sizeof(memory)/sizeof(memory[0]), L"Available: %lu / Total: %lu", memStatus.dwAvailPhys, memStatus.dwTotalPhys );
 
 	BeginFontRender( TRUE, FONTTYPE_DEFAULT );
 		#ifdef _DEBUG

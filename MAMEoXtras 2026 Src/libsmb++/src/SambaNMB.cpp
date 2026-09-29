@@ -62,7 +62,7 @@
 
 #include <sys/types.h> // needed on FreeBSD
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 #include <winsock2.h>
 
@@ -90,7 +90,7 @@ BOOL resolve_name(const char *name, struct in_addr *return_ip, int name_type);
 
 
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 hostent *SambaNMB::gethostbyname(const char *name, bool groupquery)
 
@@ -158,7 +158,7 @@ SambaNMB::SambaNMB()
 
 	returnValue.h_length = 4;
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 	returnValue.h_addr_list = new char*[2];
 

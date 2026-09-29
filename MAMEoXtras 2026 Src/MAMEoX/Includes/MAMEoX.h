@@ -8,7 +8,12 @@
 
 
 //= I N C L U D E S ====================================================
+/* RXDK C99 declarations otherwise emit a strong D3DX helper in every TU. */
+#if defined(__clang__) && !defined(__cplusplus) && !defined(D3DXINLINE)
+#define D3DXINLINE extern __inline__ __attribute__((gnu_inline, always_inline))
+#endif
 #include <Xtl.h>
+#include <winsockx.h>
 #include "DebugLogger.h"
 
 #ifdef __cplusplus

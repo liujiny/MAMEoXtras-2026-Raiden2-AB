@@ -1554,7 +1554,7 @@ static NVRAM_HANDLER( spi )
 	if( read_or_write ) {
 		DS2404_save(file);
 	} else {
-		DS2404_init(1995, 1, 1);
+		DS2404_init();
 
 		if(file) {
 			DS2404_load(file);

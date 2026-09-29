@@ -34,19 +34,14 @@ extern "C" {
 
 //= D E F I N E S =====================================================
 #define MAPDRIVE( _drivePath__, _driveLetter__ )    { \
-                                                      UNICODE_STRING devName = { strlen(_drivePath__), strlen(_drivePath__) + 1, _drivePath__ }; \
-                                                      UNICODE_STRING devLetter = { strlen(_driveLetter__), strlen(_driveLetter__) + 1, _driveLetter__ }; \
+                                                      OBJECT_STRING devName; RtlInitAnsiString(&devName, (_drivePath__)); \
+                                                      OBJECT_STRING devLetter; RtlInitAnsiString(&devLetter, (_driveLetter__)); \
                                                       DWORD status = IoCreateSymbolicLink( &devLetter, &devName ); \
                                                       PRINTMSG(( T_INFO, "Map %s = %s, status %d", _driveLetter__, _drivePath__, status )); \
                                                     }
 
 //= S T R U C T U R E S ===============================================
-typedef struct _UNICODE_STRING
-{
-  USHORT      m_length;
-  USHORT      m_maxLength;
-  const char *m_str;
-} UNICODE_STRING, *PUNICODE_STRING;
+// RXDK supplies the canonical OBJECT_STRING and kernel declarations.
 
 //= G L O B A L = V A R S =============================================
 CInputManager			    g_inputManager;
@@ -96,8 +91,8 @@ lightgunCalibration_t    g_calibrationData[4] = { {-32767,0,32767,32767,0,-32767
 static fonttype          g_fontType = FONTTYPE_DEFAULT;
 
 //= P R O T O T Y P E S ===============================================
-XBOXAPI DWORD WINAPI IoCreateSymbolicLink( PUNICODE_STRING symLinkName, PUNICODE_STRING devName );
-XBOXAPI DWORD WINAPI IoDeleteSymbolicLink( PUNICODE_STRING symLinkName );
+
+
 
 
 //= F U N C T I O N S =================================================
@@ -157,10 +152,13 @@ void osd_vmm_printinfo( void )
 //-------------------------------------------------------------
 //  vsnprintf
 //-------------------------------------------------------------
+#if !defined(__clang__) || !defined(_XBOX)
+// RXDK uses its bounded CRT vsnprintf instead of this legacy fallback.
 int vsnprintf( char *buf, size_t count, const char *fmt, va_list lst )
 {
   return vsprintf( buf, fmt, lst );
 }
+#endif
 
 
 // Note: The "STARTUP" segment is unloaded in xbox_JoystickMouse.c

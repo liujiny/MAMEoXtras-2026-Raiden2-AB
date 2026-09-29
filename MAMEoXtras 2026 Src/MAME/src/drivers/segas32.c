@@ -708,7 +708,7 @@ static WRITE16_HANDLER( analog_custom_io_w )
 		case 0x12/2:
 		case 0x14/2:
 		case 0x16/2:
-			analog_value[offset & 3] = readinputportbytag(names[offset & 3], 0);
+			analog_value[offset & 3] = readinputportbytag(names[offset & 3]);
 			return;
 	}
 	logerror("%06X:unknown analog_custom_io_w(%X) = %04X & %04X\n", activecpu_get_pc(), offset*2, data, mem_mask ^ 0xffff);
@@ -724,7 +724,7 @@ static READ16_HANDLER( extra_custom_io_r )
 		case 0x22/2:
 		case 0x24/2:
 		case 0x26/2:
-			return readinputportbytag(names[offset & 3], 0xffff);
+			return readinputportbytag(names[offset & 3]);
 	}
 
 	logerror("%06X:unknown extra_custom_io_r(%X) & %04X\n", activecpu_get_pc(), offset*2, mem_mask ^ 0xffff);

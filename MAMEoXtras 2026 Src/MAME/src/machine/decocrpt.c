@@ -43,6 +43,7 @@ Sotsugyo Shousho		1995
 
 #include "driver.h"
 #include "decocrpt.h"
+#include "cpu/m68000/m68kmame.h"
 
 static const UINT16 xor_masks[16] =
 {

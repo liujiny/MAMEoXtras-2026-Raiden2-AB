@@ -32,7 +32,7 @@
 #include <errno.h>
 #undef errno
 #include <sys/types.h>
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 #include <time.h>
 #ifdef _XBOX
 #include <xtl.h>
@@ -252,17 +252,13 @@ char *NMBIO::decodeNBName(const char* NBName, bool groupFlag)
 		ret[NBLen/2-2]=' ';
 	}
 	// Now remove trailing spaces
-#ifdef _WIN32
-	for (i=NBLen/2-1; i>=0; i--)
-#else
-	for (int i=NBLen/2-1; i>=0; i--)
-#endif
+for (int i=NBLen/2-1; i>=0; i--)
 		if (ret[i]==' ') ret[i]=0; else break;
 	// We do not care for domain name
 	return ret;
 }
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 NBHostEnt *NMBIO::gethostbyname(const char *name, bool groupFlag)
 #else
 struct NBHostEnt *NMBIO::gethostbyname(const char *name, bool groupFlag)
@@ -328,7 +324,7 @@ struct NBHostEnt *NMBIO::gethostbyname(const char *name, bool groupFlag)
 		cout<<"\n";
 #endif
 		
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 		if (sendto(sock, (const char*)p, query.getLength()-2, 0, (sockaddr*)&socknetaddr, sizeof(struct sockaddr_in))==-1)
 #else
 		if (sendto(sock, p, query.getLength(), 0, (sockaddr*)&socknetaddr, sizeof(struct sockaddr_in))==-1)
@@ -338,7 +334,7 @@ struct NBHostEnt *NMBIO::gethostbyname(const char *name, bool groupFlag)
 		  cout<< "NMBIO::gethostbyname, cannot send datagram.\n";
 #endif
 			errno=NO_RECOVERY;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 			if (sock) closesocket(sock);
 #else
 			if (sock) close(sock);
@@ -371,7 +367,7 @@ struct NBHostEnt *NMBIO::gethostbyname(const char *name, bool groupFlag)
 			tv.tv_sec = 1;	// wait max 1 sec
 			tv.tv_usec = 0;*/
 //			queue=recvfrom(sock, rawdata, 1000, 0, 0, 0);
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 			queue=recv(sock, (char*)rawdata, 1000, 0);
 #else
 			queue=read(sock, rawdata, 1000);
@@ -413,7 +409,7 @@ struct NBHostEnt *NMBIO::gethostbyname(const char *name, bool groupFlag)
 					char* realName = new char[len+1];
 					memset(realName, 0, len+1);
 					strncpy(realName, name, len);
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 					if (sock) closesocket(sock);
 #else
 					if (sock) close(sock);
@@ -424,7 +420,7 @@ struct NBHostEnt *NMBIO::gethostbyname(const char *name, bool groupFlag)
 			}
 			break;
 		}
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 		if (sock) closesocket(sock);
 #else
 		if (sock) close(sock);
@@ -454,7 +450,7 @@ struct NBHostEnt *NMBIO::gethostbyname(const char *name, bool groupFlag)
 	
 		int yes=1;
  		// David: the (void*) cast is required for Solaris
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	    if (setsockopt(sock,SOL_SOCKET,SO_BROADCAST,(const char*)&yes,sizeof(int)) < 0)
 #else
 	    if (setsockopt(sock,SOL_SOCKET,SO_BROADCAST,(void*)&yes,sizeof(int)) < 0)
@@ -464,7 +460,7 @@ struct NBHostEnt *NMBIO::gethostbyname(const char *name, bool groupFlag)
 #if DEBUG >= 1
 			cout<<"NMBIO::gethostbyname, set socket option impossible.\n";
 #endif
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 			if (sock) closesocket(sock);
 #else
 			if (sock) close(sock);
@@ -484,7 +480,7 @@ struct NBHostEnt *NMBIO::gethostbyname(const char *name, bool groupFlag)
 		cout<<"\n";
 #endif
 		
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 		if (sendto(sock, (const char*)p, query.getLength(), 0, (sockaddr*)socknetaddr, sizeof(struct sockaddr_in))==-1)
 #else
 		if (sendto(sock, p, query.getLength(), 0, (sockaddr*)socknetaddr, sizeof(struct sockaddr_in))==-1)
@@ -494,7 +490,7 @@ struct NBHostEnt *NMBIO::gethostbyname(const char *name, bool groupFlag)
 		  cout<< "NMBIO::gethostbyname, cannot send datagram.\n";
 #endif
 			errno=NO_RECOVERY;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 			if (sock) closesocket(sock);
 #else
 			if (sock) close(sock);
@@ -527,7 +523,7 @@ struct NBHostEnt *NMBIO::gethostbyname(const char *name, bool groupFlag)
 			tv.tv_sec = 1;	// wait max 1 sec
 			tv.tv_usec = 0;*/
 //			queue=recvfrom(sock, rawdata, 1000, 0, 0, 0);
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 			queue=recv(sock, (char*)rawdata, 1000, 0);
 #else
 			queue=read(sock, rawdata, 1000);
@@ -578,7 +574,7 @@ cout<<(int)((*dat)&0xFF)<<"."<<(int)((*(dat+1))&0xFF)<<"."<<((int)(*(dat+2))&0xF
 			}
 			break;
 		}
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 		if (sock) closesocket(sock);
 #else
 		if (sock) close(sock);
@@ -616,7 +612,7 @@ cout<<(int)((*dat)&0xFF)<<"."<<(int)((*(dat+1))&0xFF)<<"."<<((int)(*(dat+2))&0xF
 // This doesn't work ! server will not indicate its name whatever packet
 // we send it !
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 NBHostEnt *NMBIO::gethostbyaddr(uint32 IP, bool groupFlag)
 #else
 struct NBHostEnt *NMBIO::gethostbyaddr(uint32 IP, bool groupFlag)
@@ -653,7 +649,7 @@ struct NBHostEnt *NMBIO::gethostbyaddr(uint32 IP, bool groupFlag)
 	cout<<"\n";
 #endif
 				
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	if (sendto(sock, (const char *)p, query.getLength(), 0, (sockaddr*)&connectParam, sizeof(connectParam))==-1)
 #else
 	if (sendto(sock, p, query.getLength(), 0, (sockaddr*)&connectParam, sizeof(connectParam))==-1)
@@ -681,7 +677,7 @@ struct NBHostEnt *NMBIO::gethostbyaddr(uint32 IP, bool groupFlag)
 	// timeout=>exit
 	if (!select(sock+1, &rfds, 0, 0, &tv)) {errno=HOST_NOT_FOUND; delete rawdata;  return 0;}
 //		queue=recvfrom(sock, rawdata, 1000, 0, 0, 0);
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	queue=recv(sock, (char*)rawdata, 1000, 0);
 #else
 	queue=read(sock, rawdata, 1000);
@@ -721,7 +717,7 @@ void NMBIO::addNameIpToCache(const char *hostname, uint32 ip, uint32 timeout, bo
 }  
 
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 NBHostEnt *NMBIO::askNBNS(const char *name, bool groupFlag)
 #else
 struct NBHostEnt *NMBIO::askNBNS(const char *name, bool groupFlag)
@@ -757,7 +753,7 @@ struct NBHostEnt *NMBIO::askNBNS(const char *name, bool groupFlag)
 	for (int i=0; i<query.getLength(); i++) printf("%X ",p[i]);
 	cout<<"\n";
 #endif
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	if (sendto(sock, (const char *)p, query.getLength(), 0, (sockaddr*)&connectParam, sizeof(connectParam))==-1)
 #else
 	if (sendto(sock, p, query.getLength(), 0, (sockaddr*)&connectParam, sizeof(connectParam))==-1)
@@ -767,7 +763,7 @@ struct NBHostEnt *NMBIO::askNBNS(const char *name, bool groupFlag)
 		cout<<"NMBIO::askNBNS, cannot send datagram.\n";
 #endif
 		errno=NO_RECOVERY;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 		if (sock) closesocket(sock);
 #else
 		if (sock) close(sock);
@@ -788,13 +784,13 @@ struct NBHostEnt *NMBIO::askNBNS(const char *name, bool groupFlag)
 	tv.tv_sec = 1;	// wait max 1 sec
 	tv.tv_usec = 0;
 	// timeout=>exit
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	if (!select(sock+1, &rfds, 0, 0, &tv)) {errno=HOST_NOT_FOUND; delete rawdata; if (sock) closesocket(sock); return 0;}
 #else
 	if (!select(sock+1, &rfds, 0, 0, &tv)) {errno=HOST_NOT_FOUND; delete rawdata; if (sock) close(sock); return 0;}
 #endif
 //	queue=recvfrom(sock, rawdata, 1000, 0, 0, 0);
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	queue=recv(sock, (char *)rawdata, 1000, 0);
 #else
 	queue=read(sock, rawdata, 1000);
@@ -805,26 +801,26 @@ struct NBHostEnt *NMBIO::askNBNS(const char *name, bool groupFlag)
 	cout<<"\n";
 #endif
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	if (queue<=0) {errno=NO_RECOVERY; delete rawdata; if (sock) closesocket(sock); return 0;}
 #else
 	if (queue<=0) {errno=NO_RECOVERY; delete rawdata; if (sock) close(sock); return 0;}
 #endif
 	rawdata[queue]=0; // barrier, ok : rawdata size=1001
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	if (queue<4) {errno=NO_RECOVERY; delete rawdata; if (sock) closesocket(sock); return 0;}
 #else
 	if (queue<4) {errno=NO_RECOVERY; delete rawdata; if (sock) close(sock); return 0;}
 #endif
 	// we don't care here for the errcode
 	if ((rawdata[0]!=0) || (rawdata[1]!=0) || // id=0
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 		((rawdata[2]&0xFD)!=0x85)) {errno=HOST_NOT_FOUND; delete rawdata; if (sock) closesocket(sock); return 0;}
 #else
 		((rawdata[2]&0xFD)!=0x85)) {errno=HOST_NOT_FOUND; delete rawdata; if (sock) close(sock); return 0;}
 #endif
 	// ignore fixed bytes
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	if (queue<12) {errno=NO_RECOVERY; delete rawdata; if (sock) closesocket(sock); return 0;}
 #else
 	if (queue<12) {errno=NO_RECOVERY; delete rawdata; if (sock) close(sock); return 0;}
@@ -834,7 +830,7 @@ struct NBHostEnt *NMBIO::askNBNS(const char *name, bool groupFlag)
 	ret->NBName=new char[len+1];
 	strcpy(ret->NBName,(char*)(rawdata+12));
 	ret->name=decodeNBName(ret->NBName,groupFlag);
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	if (queue<12+len+1+8+2) {errno=NO_RECOVERY; delete rawdata; if (sock) closesocket(sock); return 0;}
 #else
 	if (queue<12+len+1+8+2) {errno=NO_RECOVERY; delete rawdata; if (sock) close(sock); return 0;}
@@ -842,7 +838,7 @@ struct NBHostEnt *NMBIO::askNBNS(const char *name, bool groupFlag)
 	// skip more bytes
 	uint16 addrLen=(((uint16)rawdata[12+len+1+8]) << 8)
 				|(((uint16)rawdata[12+len+1+8+1]) &0xFF);
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	if (queue<12+len+1+8+2+addrLen) {errno=NO_RECOVERY; delete rawdata; if (sock) closesocket(sock); return 0;}
 #else
 	if (queue<12+len+1+8+2+addrLen) {errno=NO_RECOVERY; delete rawdata; if (sock) close(sock); return 0;}
@@ -874,7 +870,7 @@ struct NBHostEnt *NMBIO::askNBNS(const char *name, bool groupFlag)
 	for (int i=0; i<query.getLength(); i++) printf("%X ",p[i]);
 	cout<<"\n";
 #endif
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	if (sendto(sock, (const char *)p, query.getLength(), 0, (sockaddr*)&connectParam, sizeof(connectParam))==-1)
 #else
 	if (sendto(sock, p, query.getLength(), 0, (sockaddr*)&connectParam, sizeof(connectParam))==-1)
@@ -885,7 +881,7 @@ struct NBHostEnt *NMBIO::askNBNS(const char *name, bool groupFlag)
 #endif
 		errno=NO_RECOVERY;
 		delete ret;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 		if (sock) closesocket(sock);
 #else
 		if (sock) close(sock);
@@ -903,13 +899,13 @@ struct NBHostEnt *NMBIO::askNBNS(const char *name, bool groupFlag)
 	tv.tv_sec = 1;	// wait max 1 sec
 	tv.tv_usec = 0;
 	// timeout=>exit
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	if (!select(sock+1, &rfds, 0, 0, &tv)) {errno=HOST_NOT_FOUND; delete rawdata; delete ret; if (sock) closesocket(sock); return 0;}
 #else
 	if (!select(sock+1, &rfds, 0, 0, &tv)) {errno=HOST_NOT_FOUND; delete rawdata; delete ret; if (sock) close(sock); return 0;}
 #endif
 //	queue=recvfrom(sock, rawdata, 1000, 0, 0, 0);
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	queue=recv(sock, (char *)rawdata, 1000, 0);
 #else
 	queue=read(sock, rawdata, 1000);
@@ -920,26 +916,26 @@ struct NBHostEnt *NMBIO::askNBNS(const char *name, bool groupFlag)
 	cout<<"\n";
 #endif
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	if (queue<=0) {errno=NO_RECOVERY; delete rawdata; delete ret; if (sock) closesocket(sock); return 0;}
 #else
 	if (queue<=0) {errno=NO_RECOVERY; delete rawdata; delete ret; if (sock) close(sock); return 0;}
 #endif
 	rawdata[queue]=0; // barrier, ok : rawdata size=1001
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	if (queue<4) {errno=NO_RECOVERY; delete rawdata; delete ret; if (sock) closesocket(sock); return 0;}
 #else
 	if (queue<4) {errno=NO_RECOVERY; delete rawdata; delete ret; if (sock) close(sock); return 0;}
 #endif
 	// we don't care here for the errcode
 	if ((rawdata[0]!=0) || (rawdata[1]!=0) || // id=0
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 		((rawdata[2]&0xFD)!=0x85)) {errno=HOST_NOT_FOUND; delete rawdata; delete ret; if (sock) closesocket(sock); return 0;}
 #else
 		((rawdata[2]&0xFD)!=0x85)) {errno=HOST_NOT_FOUND; delete rawdata; delete ret; if (sock) close(sock); return 0;}
 #endif
 	// ignore fixed bytes
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	if (queue<12) {errno=NO_RECOVERY; delete rawdata; delete ret; if (sock) closesocket(sock); return 0;}
 #else
 	if (queue<12) {errno=NO_RECOVERY; delete rawdata; delete ret; if (sock) close(sock); return 0;}
@@ -947,7 +943,7 @@ struct NBHostEnt *NMBIO::askNBNS(const char *name, bool groupFlag)
 	len=strlen((char*)(rawdata+12)); // barrier prevents cataclysm
 	if (strcasecmp(ret->NBName,(char*)(rawdata+12))) {
 		// AARGL, NetBIOS Name Server sends invalid data !
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 		if (sock) closesocket(sock);
 #else
 		if (sock) close(sock);
@@ -959,7 +955,7 @@ struct NBHostEnt *NMBIO::askNBNS(const char *name, bool groupFlag)
 	cout<<(int)((*dat)&0xFF)<<"."<<(int)((*(dat+1))&0xFF)<<"."<<((int)(*(dat+2))&0xFF)<<"."<<(int)((*(dat+3))&0xFF)<<"\n";
 #endif
 #endif // OVERKILL
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	if (sock) closesocket(sock);
 #else
 	if (sock) close(sock);

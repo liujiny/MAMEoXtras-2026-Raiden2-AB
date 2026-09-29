@@ -58,7 +58,7 @@
 
 #include <string.h>
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 #define getuid() 500
 

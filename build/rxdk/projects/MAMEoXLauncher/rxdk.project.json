@@ -1,0 +1,113 @@
+{
+  "name": "MAMEoXLauncher",
+  "configurations": {
+    "Release": {
+      "configuration": "release",
+      "sources": [
+        "../../source/MAMEoX/Sources/DebugLogger.cpp",
+        "../../source/MAMEoX/Sources/Gamepad.cpp",
+        "../../source/MAMEoX/Sources/GFilterManager.cpp",
+        "../../source/MAMEoX/Sources/GraphicsManager.cpp",
+        "../../source/MAMEoX/Sources/InputManager.cpp",
+        "../../source/MAMEoX/Sources/Keyboard.cpp",
+        "../../source/MAMEoX/Sources/Lightgun.cpp",
+        "../../source/MAMEoXLauncher/Sources/main.cpp",
+        "../../source/MAMEoX/Sources/MAMEoXUtil.cpp",
+        "../../source/MAMEoXLauncher/Sources/PNGFunctions.cpp",
+        "../../source/MAMEoX/Sources/SMBHandler.cpp",
+        "../../source/MAMEoX/Sources/System_IniFile.cpp",
+        "../../source/MAMEoX/Sources/VirtualMemoryManager.cpp",
+        "../../toolchain/samples/RxdkSamples/Common/Src/xbfont.cpp",
+        "../../source/MAMEoX/Sources/xbox_FileIO.cpp",
+        "../../source/MAMEoX/Sources/xbox_Network.cpp",
+        "../../source/MAMEoX/Sources/xbox_Timing.c",
+        "../../toolchain/samples/RxdkSamples/Common/Src/xbresource.cpp",
+        "../../toolchain/samples/RxdkSamples/Common/Src/xbutil.cpp",
+        "../../source/MAMEoXLauncher/Sources/XMLParse.cpp",
+        "../../source/MAMEoXLauncher/Sources/BaseMenuView.cpp",
+        "../../source/MAMEoXLauncher/Sources/BasePopupMenuView.cpp",
+        "../../source/MAMEoXLauncher/Sources/BaseView.cpp",
+        "../../source/MAMEoXLauncher/Sources/HelpScreen.cpp",
+        "../../source/MAMEoXLauncher/Sources/LightgunCalibrationScreen.cpp",
+        "../../source/MAMEoXLauncher/Sources/ListView.cpp",
+        "../../source/MAMEoXLauncher/Sources/OptionsScreen.cpp",
+        "../../source/MAMEoXLauncher/Sources/ROMListScreen.cpp",
+        "../../source/MAMEoXLauncher/Sources/ScreensaverScreen.cpp",
+        "../../source/MAMEoXLauncher/Sources/SkinChooserScreen.cpp",
+        "../../source/MAMEoXLauncher/Sources/StartMenuView.cpp",
+        "../../source/MAMEoXLauncher/Sources/TVCalibrationScreen.cpp",
+        "../../source/MAMEoXLauncher/Sources/VirtualKeyboardView.cpp",
+        "../../source/MAMEoXLauncher/Sources/Skin.cpp",
+        "../../source/MAMEoXLauncher/Sources/Skin3PartBackdrop.cpp",
+        "../../source/MAMEoXLauncher/Sources/SkinButtonInfo.cpp",
+        "../../source/MAMEoXLauncher/Sources/SkinChooser.cpp",
+        "../../source/MAMEoXLauncher/Sources/SkinElement.cpp",
+        "../../source/MAMEoXLauncher/Sources/SkinHighlightBar.cpp",
+        "../../source/MAMEoXLauncher/Sources/SkinIcon.cpp",
+        "../../source/MAMEoXLauncher/Sources/SkinMenuBody.cpp",
+        "../../source/MAMEoXLauncher/Sources/SkinMenuFooter.cpp",
+        "../../source/MAMEoXLauncher/Sources/SkinMenuHeader.cpp",
+        "../../source/MAMEoXLauncher/Sources/SkinProgressbar.cpp",
+        "../../source/MAMEoXLauncher/Sources/SkinScreenshot.cpp",
+        "../../source/MAMEoXLauncher/Sources/SkinScrollArea.cpp",
+        "../../source/MAMEoXLauncher/Sources/SkinText.cpp",
+        "../../source/MAMEoXLauncher/Sources/SkinTriggerInfo.cpp"
+      ],
+      "libraries": [
+        "libcompat.lib",
+        "libxapi.lib",
+        "libd3d8.lib",
+        "libd3dx8.lib",
+        "libxgraphics.lib",
+        "libdsound.lib",
+        "libdmusic.lib",
+        "libkernel.lib",
+        "libxnet.lib",
+        "libc.lib",
+        "libcpp.lib"
+      ],
+      "imageBuild": {
+        "stackSize": 65536,
+        "noLibWarn": true,
+        "limitMemory": false,
+        "testName": "MAMEoXtras 2026 RXDK Raiden2 AB",
+        "titleImage": "../../source/Media/mox-icon.xpr",
+        "defaultSaveImage": "../../source/Media/mox-icon.xpr",
+        "testId": "0x4D414D46",
+        "formatUtilityDrive": true,
+        "noPreload": []
+      },
+      "includePaths": [
+        "../../source/MAMEoXLauncher/Includes",
+        "../../source/MAMEoX/Includes",
+        "../../source",
+        "../../toolchain/samples/RxdkSamples/Common/Include",
+        "../../source/libsmb++/src",
+        "../../source/ZLIB",
+        "../../source/MAME/src",
+        "../../source/SharedResources/Includes"
+      ],
+      "defines": [
+        "NDEBUG",
+        "DEBUG_KEYBOARD",
+        "_MBCS"
+      ],
+      "cppStandard": "c++14",
+      "exceptions": false,
+      "compileFlags": [
+        "-include",
+        "build/rxdk/source/VCPPMame.h",
+        "-fno-strict-aliasing",
+        "-iquote",
+        "build/rxdk/source/MAME/src"
+      ],
+      "createIso": false,
+      "outputDir": "out-release",
+      "projectReferences": [
+        "../libsmb",
+        "../SharedResources"
+      ]
+    }
+  },
+  "defaultConfiguration": "Release"
+}

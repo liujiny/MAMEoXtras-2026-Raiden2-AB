@@ -34,7 +34,7 @@
 #ifndef USE_SAMBA
 
 #include <sys/types.h> // needed on FreeBSD
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 #ifdef _XBOX
 #include <xtl.h>
 #undef errno
@@ -66,7 +66,7 @@ NativeNMB::NativeNMB()
 	returnValue.h_aliases = 0;
 	returnValue.h_addrtype = AF_INET;
 	returnValue.h_length = 4;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	returnValue.h_addr_list = new char*[2];
 #else
 	returnValue.h_addr_list = new (char*)[2];

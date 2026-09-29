@@ -108,7 +108,7 @@ void Util::parse(const char *name, bool interpretDirs)
 //	cerr<<ntoken<<endl;
 	
 	// create the token and separator tables
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 	char **token = new char*[ntoken];
 #else
 	char **token = new (char*)[ntoken];
@@ -148,11 +148,7 @@ void Util::parse(const char *name, bool interpretDirs)
 	}
 	
 	// Token analysis
-#ifdef _WIN32
-	for (i=0; i<ntoken; i++) {
-#else
-	for (int i=0; i<ntoken; i++) {
-#endif
+for (int i=0; i<ntoken; i++) {
 
 		// skip protocol part		
 		if ((i==0) && ((!strcmp(token[0],"smb") || (!strcmp(token[0],"SMB"))))) {
@@ -257,11 +253,7 @@ void Util::parse(const char *name, bool interpretDirs)
 	} // end token analysis
 
 	// cleanup	
-#ifdef _WIN32
-	for (i=0; i<ntoken; i++) {
-#else
-	for (int i=0; i<ntoken; i++) {
-#endif
+for (int i=0; i<ntoken; i++) {
 //		cerr<<separator[i]<<" "<<token[i]<<endl;
 		delete token[i]; // all tokens are non 0
 	}

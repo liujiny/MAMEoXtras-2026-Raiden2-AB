@@ -10,11 +10,11 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <string>
-#include <io.h>
+#include <unistd.h>
+#include <strings.h>
 
 //= D E F I N E S ===========================================================================================
-#define strcasecmp		stricmp
-#define strncasecmp		strnicmp
+
 
 #define READCHAR( f, b )			if( read( (f), (b), 1 ) != 1 ) return E_FAIL
 //= G L O B A L = V A R S ====================================================================================
@@ -45,7 +45,7 @@ HRESULT XMLParseSkipUntilTag( int fd, const std::string &tag )
 				dataBuffer += data;
 			}
 
-			if( !stricmp( dataBuffer.c_str(), tag.c_str() ) )
+			if( !strcasecmp( dataBuffer.c_str(), tag.c_str() ) )
 				return S_OK;
 			dataBuffer = "";
 		}
@@ -112,7 +112,7 @@ HRESULT XMLParseReadUntilTag( std::string *ret, int fd, const std::string &tag )
 				dataBuffer += data;
 			}
 
-			if( !stricmp( dataBuffer.c_str(), tag.c_str() ) )
+			if( !strcasecmp( dataBuffer.c_str(), tag.c_str() ) )
 				return S_OK;
 
 				// This is not the tag we're looking for, just throw it on *ret

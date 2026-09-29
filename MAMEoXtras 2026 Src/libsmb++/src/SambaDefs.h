@@ -36,7 +36,7 @@ typedef unsigned char uchar;
 #define NULL 0
 #endif
 // include for the in_addr structure
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 #include <winsock2.h>
 typedef unsigned int uid_t;
 typedef unsigned int gid_t;

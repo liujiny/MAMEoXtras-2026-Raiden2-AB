@@ -15,6 +15,7 @@
 #include "System_IniFile.h"
 
 #include <string>
+#include <strings.h>
 #include <vector>
 #include <algorithm>
 
@@ -497,7 +498,7 @@ BOOL CROMListScreen::LoadROMListFile( void )
     } \
     else \
     { \
-    if( !(_data__) && !((_data__) = (_dataType__##*)malloc( (_dataSize__) )) ) \
+    if( !(_data__) && !((_data__) = (_dataType__ *)malloc( (_dataSize__) )) ) \
       { \
         free( fileData ); \
         DeleteFile( romListFile.c_str() ); \
@@ -846,7 +847,7 @@ BOOL CROMListScreen::LoadROMMetadataFile( void )
     } \
     else \
     { \
-    if( !(_data__) && !((_data__) = (_dataType__##*)malloc( (_dataSize__) )) ) \
+    if( !(_data__) && !((_data__) = (_dataType__ *)malloc( (_dataSize__) )) ) \
       { \
         free( fileData ); \
         DeleteFile( romMetadataFile.c_str() ); \
@@ -1050,7 +1051,7 @@ BOOL CROMListScreen::UpdateROMMetadataFile( void )
     } \
     else \
     { \
-    if( !(_data__) && !((_data__) = (_dataType__##*)malloc( (_dataSize__) )) ) \
+    if( !(_data__) && !((_data__) = (_dataType__ *)malloc( (_dataSize__) )) ) \
       { \
         free( fileData ); \
         DeleteFile( romMetadataFile.c_str() ); \
@@ -1120,7 +1121,7 @@ BOOL CROMListScreen::UpdateROMMetadataFile( void )
       // Find the index for this ROM
     UINT32 index;
       // Go through the m_driverInfoList and find the entry matching that read from the XML file
-    for( index = 0; index < m_numDrivers && stricmp( m_driverInfoList[index].m_romFileName, metadata.m_romFileName ); ++index )
+    for( index = 0; index < m_numDrivers && strcasecmp( m_driverInfoList[index].m_romFileName, metadata.m_romFileName ); ++index )
       ;
 
     m_driverMetadata[i] = metadata;
@@ -1266,7 +1267,7 @@ BOOL CROMListScreen::LoadROMStatusFile( void )
       {
           // Just finished reading a ROM entry
           // Go through the m_driverInfoList and find the entry matching that read from the XML file
-        for( i = 0; i < m_numDrivers && stricmp( m_driverInfoList[i].m_romFileName, romName.c_str() ); ++i )
+        for( i = 0; i < m_numDrivers && strcasecmp( m_driverInfoList[i].m_romFileName, romName.c_str() ); ++i )
           ;
 
           // Don't redraw for every entry, as that will slow the parsing down drastically
@@ -3104,7 +3105,7 @@ static BOOL Compare_Description( UINT32 a, UINT32 b )
   MAMEDriverData_t &aDriver = CROMListScreen::m_driverInfoList[a];
   MAMEDriverData_t &bDriver = CROMListScreen::m_driverInfoList[b];
 
-  int cmp = stricmp( aDriver.m_description, bDriver.m_description );
+  int cmp = strcasecmp( aDriver.m_description, bDriver.m_description );
 
   return cmp < 0;
 }
@@ -3119,9 +3120,9 @@ static BOOL Compare_Manufacturer( UINT32 a, UINT32 b )
   MAMEDriverData_t &bDriver = CROMListScreen::m_driverInfoList[b];
 
     // Compare the manufacturer string, sorting by name if they're equal
-  int cmp = stricmp( aDriver.m_manufacturer, bDriver.m_manufacturer );
+  int cmp = strcasecmp( aDriver.m_manufacturer, bDriver.m_manufacturer );
   if( !cmp )
-    cmp = stricmp( aDriver.m_description, bDriver.m_description );
+    cmp = strcasecmp( aDriver.m_description, bDriver.m_description );
 
   return cmp < 0;
 }
@@ -3135,9 +3136,9 @@ static BOOL Compare_Year( UINT32 a, UINT32 b )
   MAMEDriverData_t &bDriver = CROMListScreen::m_driverInfoList[b];
 
     // Compare the year string, sorting by name if they're equal
-  int cmp = stricmp( aDriver.m_year, bDriver.m_year );
+  int cmp = strcasecmp( aDriver.m_year, bDriver.m_year );
   if( !cmp )
-    cmp = stricmp( aDriver.m_description, bDriver.m_description );
+    cmp = strcasecmp( aDriver.m_description, bDriver.m_description );
 
   return cmp < 0;
 }
@@ -3151,9 +3152,9 @@ static BOOL Compare_ParentROM( UINT32 a, UINT32 b )
   MAMEDriverData_t &bDriver = CROMListScreen::m_driverInfoList[b];
 
     // Compare the parent rom string, sorting by name if they're equal
-  int cmp = stricmp( aDriver.m_cloneFileName, bDriver.m_cloneFileName );
+  int cmp = strcasecmp( aDriver.m_cloneFileName, bDriver.m_cloneFileName );
   if( !cmp )
-    cmp = stricmp( aDriver.m_description, bDriver.m_description );
+    cmp = strcasecmp( aDriver.m_description, bDriver.m_description );
 
   return cmp < 0;
 }
@@ -3170,9 +3171,9 @@ static BOOL Compare_Genre( UINT32 a, UINT32 b )
 
   int cmp = 0;
   if( aStatus.m_genre && bStatus.m_genre )
-    cmp = stricmp( aStatus.m_genre, bStatus.m_genre );
+    cmp = strcasecmp( aStatus.m_genre, bStatus.m_genre );
   if( !cmp )
-    cmp = stricmp( aDriver.m_description, bDriver.m_description );
+    cmp = strcasecmp( aDriver.m_description, bDriver.m_description );
 
   return cmp < 0;
 }
@@ -3189,7 +3190,7 @@ static BOOL Compare_NumPlayers( UINT32 a, UINT32 b )
     // towards the bottom)
   int cmp = aDriver.m_numPlayers - bDriver.m_numPlayers;
   if( !cmp )
-    cmp = stricmp( aDriver.m_description, bDriver.m_description );
+    cmp = strcasecmp( aDriver.m_description, bDriver.m_description );
 
   return cmp < 0;
 }
@@ -3207,7 +3208,7 @@ static BOOL Compare_ROMStatus( UINT32 a, UINT32 b )
     // Sort by the rom status, putting lower (better working) numbers first
   int cmp = bStatus - aStatus;
   if( !cmp )
-    return stricmp( aDriver.m_description, bDriver.m_description ) < 0;
+    return strcasecmp( aDriver.m_description, bDriver.m_description ) < 0;
 
   return cmp > 0;
 }
@@ -3225,7 +3226,7 @@ static BOOL Compare_NumTimesPlayed( UINT32 a, UINT32 b )
     // Sort by the rom status, putting higher (more often played) numbers first
   int cmp = bStatus.m_timesPlayed - aStatus.m_timesPlayed;
   if( !cmp )
-    return stricmp( aDriver.m_description, bDriver.m_description ) < 0;
+    return strcasecmp( aDriver.m_description, bDriver.m_description ) < 0;
 
   return cmp < 0;
 }
@@ -3290,7 +3291,7 @@ static BOOL Compare_FavoriteStatus( UINT32 a, UINT32 b )
     return bNumericStatus < aNumericStatus;
   }
   
-  return stricmp( aDriver.m_description, bDriver.m_description ) < 0;
+  return strcasecmp( aDriver.m_description, bDriver.m_description ) < 0;
 }
 
 //---------------------------------------------------------------------

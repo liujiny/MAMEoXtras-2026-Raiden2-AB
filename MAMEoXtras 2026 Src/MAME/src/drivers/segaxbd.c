@@ -192,7 +192,7 @@ static READ16_HANDLER( adc_r )
 	int which = (iochip_regs[0][2] >> 2) & 7;
 
 	/* on the write, latch the selected input port and stash the value */
-	int value = readinputportbytag(ports[which], 0x0010);
+	int value = readinputportbytag(ports[which]);
 
 	/* reverse some port values */
 	if (adc_reverse[which])

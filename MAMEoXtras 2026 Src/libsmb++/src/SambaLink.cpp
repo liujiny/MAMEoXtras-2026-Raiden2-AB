@@ -60,7 +60,7 @@
 
 
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(_XBOX)
 
 #include <unistd.h>
 
@@ -68,7 +68,7 @@
 
 #include <ctype.h>
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 #include <winsock2.h>
 
@@ -264,7 +264,7 @@ public:
 
 		// add the original list to it
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 		for (it = ori; (it); it = it->next) {
 
@@ -286,7 +286,7 @@ public:
 
 		// dirListing is non-empty at this stage, we added 'this' to it
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 		for (it = dirListing; (it) && (it->next); it = it->next) {
 
@@ -592,7 +592,7 @@ SambaLink::~SambaLink()
 
 
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 struct cli_state *SambaLink::connectUtil(const char *toparse)
 
@@ -660,7 +660,7 @@ struct cli_state *SambaLink::connectUtil(const char *toparse = 0)
 
 	char *hostip = util.ip();
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 	if (hostip) ip.s_addr = inet_addr(hostip);
 
@@ -846,7 +846,7 @@ struct cli_state *SambaLink::connectUtil(const char *toparse = 0)
 
 // Used in any of the functions when an error occurs
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 int SambaLink::findError(struct cli_state *cli)
 
@@ -888,7 +888,7 @@ int SambaLink::findError(int errcode)
 
 // Used in any of the functions when all goes well
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 int SambaLink::noError(int ret)
 
@@ -914,7 +914,7 @@ int SambaLink::noError(int ret=0)
 
 // They accept smbURLs as parameters
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 int SambaLink::open(const char* file, int flags, int mode)
 
@@ -998,7 +998,7 @@ int SambaLink::open(const char* file="", int flags=O_RDWR, int mode=0644)
 
 
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 int SambaLink::creat(const char* file, int mode)
 
@@ -1082,7 +1082,7 @@ int SambaLink::stat(const char *filename, struct stat *buf)
 
 		buf->st_ctime = buf->st_ctime = buf->st_ctime = theTime;
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 		buf->st_uid = 500;
 
@@ -1110,7 +1110,7 @@ int SambaLink::stat(const char *filename, struct stat *buf)
 
 		buf->st_mode=040755; // directory
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 		buf->st_uid=500;
 
@@ -1178,7 +1178,7 @@ int SambaLink::fstat(int fd, struct stat *buf)
 
 	// system should be mapped to ???
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 #else
 
@@ -1664,7 +1664,7 @@ static void shareBrowser(const char *name, uint32 m, const char *comment)
 
 	entry.st_mode=040755; // directory
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 	entry.st_uid=500;
 
@@ -1706,7 +1706,7 @@ static void netBrowser(const char *name, uint32 m, const char *comment)
 
 	entry.st_mode=040755; // directory
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 	entry.st_uid=500;
 
@@ -1742,7 +1742,7 @@ static void netBrowser(const char *name, uint32 m, const char *comment)
 
 // Use the full url because a user/pass might be in it
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 int SambaLink::getShareList(const char* toparse)
 
@@ -1786,7 +1786,7 @@ int SambaLink::getShareList(const char* toparse = 0)
 
 // Use the full url because a user/pass might be in it
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 int SambaLink::getWorkgroupList(const char* toparse)
 
@@ -1832,7 +1832,7 @@ int SambaLink::getWorkgroupList(const char* toparse = 0)
 
 // Use the full url because a user/pass might be in it
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 int SambaLink::getMemberList(const char* toparse)
 

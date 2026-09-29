@@ -27,6 +27,7 @@
 #include "state.h"
 #include "mamedbg.h"
 #include "mb86233.h"
+#include <math.h>
 
 /***************************************************************************
     STRUCTURES & TYPEDEFS

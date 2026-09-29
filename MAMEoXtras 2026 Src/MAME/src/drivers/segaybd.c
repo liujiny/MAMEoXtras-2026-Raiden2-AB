@@ -339,7 +339,7 @@ static WRITE16_HANDLER( analog_w )
 {
 	static const char *ports[] = { "ADC0", "ADC1", "ADC2", "ADC3", "ADC4", "ADC5", "ADC6" };
 	int selected = ((offset & 3) == 3) ? (3 + (misc_io_data[0x08/2] & 3)) : (offset & 3);
-	int value = readinputportbytag(ports[selected], 0xff);
+	int value = readinputportbytag(ports[selected]);
 	analog_data[offset & 3] = value;
 }
 

@@ -52,7 +52,7 @@
 
 
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(_XBOX)
 
 #ifdef _XBOX
 
@@ -1225,15 +1225,7 @@ SMBnegprotPacket::SMBnegprotPacket(uint8 dial) : SMBPacket(dial)
 
 	char *tmp=(char*)smb_buf;
 
-#ifdef _WIN32
-
-	for (i=0; i<NbDialect; i++)
-
-#else
-
-	for (int i=0; i<NbDialect; i++)
-
-#endif
+for (int i=0; i<NbDialect; i++)
 
 	{
 

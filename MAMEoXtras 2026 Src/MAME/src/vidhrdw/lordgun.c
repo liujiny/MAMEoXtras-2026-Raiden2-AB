@@ -317,6 +317,6 @@ if (code_pressed(KEYCODE_Z))
 	for (i = 0; i < 2; i++)
 	{
 		lorddgun_calc_gun_scr(i);
-		draw_crosshair(bitmap, lordgun_gun[i].scr_x,lordgun_gun[i].scr_y, cliprect,i);
+		draw_crosshair(bitmap, lordgun_gun[i].scr_x,lordgun_gun[i].scr_y, cliprect);
 	}
 }
