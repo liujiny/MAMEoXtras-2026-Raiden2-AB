@@ -3834,11 +3834,17 @@ void CLIB_DECL usrintf_showmessage_secs(int seconds, const char *text,...)
 	messagecounter = seconds * Machine->refresh_rate;
 }
 
-void do_loadsave(struct mame_bitmap *bitmap, int request_loadsave)
+void do_loadsave(struct mame_bitmap *bitmap, int request_loadsave, int already_paused)
 {
 	int file = 0;
 
-	mame_pause(1);
+	/*
+	 * Save/load temporarily pauses the machine when invoked during normal
+	 * gameplay. If we were called from the outer UI pause loop, that pause is
+	 * already active and must remain active after the slot picker closes.
+	 */
+	if (!already_paused)
+		mame_pause(1);
 
 	do
 	{
@@ -3898,7 +3904,8 @@ void do_loadsave(struct mame_bitmap *bitmap, int request_loadsave)
 	}
 	while (!file);
 
-	mame_pause(0);
+	if (!already_paused)
+		mame_pause(0);
 
 	if (file > 0)
 	{
@@ -4106,10 +4113,10 @@ int handle_user_interface(struct mame_bitmap *bitmap)
 		machine_reset();
 
 	if (input_ui_pressed(IPT_UI_SAVE_STATE))
-		do_loadsave(bitmap, LOADSAVE_SAVE);
+		do_loadsave(bitmap, LOADSAVE_SAVE, 0);
 
 	if (input_ui_pressed(IPT_UI_LOAD_STATE))
-		do_loadsave(bitmap, LOADSAVE_LOAD);
+		do_loadsave(bitmap, LOADSAVE_LOAD, 0);
 
 #ifndef MESS
 	if (single_step || input_ui_pressed(IPT_UI_PAUSE)) /* pause the game */
@@ -4143,10 +4150,10 @@ int handle_user_interface(struct mame_bitmap *bitmap)
 
 
 			if (input_ui_pressed(IPT_UI_SAVE_STATE))
-				do_loadsave(bitmap, LOADSAVE_SAVE);
+				do_loadsave(bitmap, LOADSAVE_SAVE, 1);
 
 			if (input_ui_pressed(IPT_UI_LOAD_STATE))
-				do_loadsave(bitmap, LOADSAVE_LOAD);
+				do_loadsave(bitmap, LOADSAVE_LOAD, 1);
 
 			/* if the user pressed F4, show the character set */
 			if (input_ui_pressed(IPT_UI_SHOW_GFX))
