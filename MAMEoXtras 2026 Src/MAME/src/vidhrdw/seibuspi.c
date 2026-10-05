@@ -42,6 +42,78 @@ static UINT32 bg_fore_layer_position;
 
 static UINT8 alpha_table[6144];
 
+#define SPI_MAX_SPRITES 0x200
+static UINT16 spi_sprite_list[4][SPI_MAX_SPRITES];
+static UINT16 spi_sprite_count[4];
+static UINT8 *spi_sprite_empty;
+static UINT8 spi_sprite_color_alpha[64];
+
+static void spi_prepare_sprites(void)
+{
+	int a;
+	memset(spi_sprite_count, 0, sizeof(spi_sprite_count));
+
+	if (layer_enable & 0x10)
+		return;
+
+	for (a = 0x400 - 2; a >= 0; a -= 2)
+	{
+		int tile_num = (sprite_ram[a + 0] >> 16) & 0xffff;
+		int priority;
+		if (sprite_ram[a + 1] & 0x1000)
+			tile_num |= 0x10000;
+		if (!tile_num)
+			continue;
+
+		priority = (sprite_ram[a + 0] >> 6) & 0x3;
+		if (spi_sprite_count[priority] < SPI_MAX_SPRITES)
+			spi_sprite_list[priority][spi_sprite_count[priority]++] = (UINT16)a;
+	}
+}
+
+static void spi_build_sprite_tables(void)
+{
+	const struct GfxElement *gfx = Machine->gfx[2];
+	int color, pen, code;
+	int pixels;
+
+	memset(spi_sprite_color_alpha, 0, sizeof(spi_sprite_color_alpha));
+	for (color = 0; color < 64; color++)
+	{
+		for (pen = 0; pen < 0x3f; pen++)
+		{
+			if (alpha_table[color * 64 + pen])
+			{
+				spi_sprite_color_alpha[color] = 1;
+				break;
+			}
+		}
+	}
+
+	spi_sprite_empty = NULL;
+	if (!gfx || gfx->total_elements <= 0)
+		return;
+
+	spi_sprite_empty = auto_malloc((gfx->total_elements + 7) / 8);
+	if (!spi_sprite_empty)
+		return;
+
+	memset(spi_sprite_empty, 0, (gfx->total_elements + 7) / 8);
+	pixels = gfx->width * gfx->height;
+	for (code = 0; code < gfx->total_elements; code++)
+	{
+		const UINT8 *src = gfx->gfxdata + code * gfx->char_modulo;
+		int pixel;
+		for (pixel = 0; pixel < pixels; pixel++)
+		{
+			if (src[pixel] != 0x3f)
+				break;
+		}
+		if (pixel == pixels)
+			spi_sprite_empty[code >> 3] |= (UINT8)(1 << (code & 7));
+	}
+}
+
 READ32_HANDLER( spi_layer_bank_r )
 {
 	return layer_bank;
@@ -247,7 +319,7 @@ WRITE32_HANDLER( video_dma_address_w )
 	COMBINE_DATA( &video_dma_address );
 }
 
-static void draw_blend_gfx(struct mame_bitmap *bitmap, const struct rectangle *cliprect, const struct GfxElement *gfx, unsigned int code, unsigned int color, int flipx, int flipy, int sx, int sy)
+static void draw_blend_gfx(struct mame_bitmap *bitmap, const struct rectangle *cliprect, const struct GfxElement *gfx, unsigned int code, unsigned int color, int flipx, int flipy, int sx, int sy, int use_alpha)
 {
 	UINT8 *dp;
 	int i, j;
@@ -330,32 +402,53 @@ static void draw_blend_gfx(struct mame_bitmap *bitmap, const struct rectangle *c
 		code &= 0xffff;
 	}
 
+	if (spi_sprite_empty && code < (unsigned int)gfx->total_elements &&
+		(spi_sprite_empty[code >> 3] & (1 << (code & 7))))
+	{
+		return;
+	}
+
 	dp = gfx->gfxdata + code * gfx->char_modulo;
 
-	// draw
-	for (j=y1; j <= y2; j++)
+	// Keep the alpha test out of the hot pixel loop for the common opaque palette.
+	if (use_alpha)
 	{
-		UINT16 *p = bitmap->line[j];
-		int dp_i = (py * width) + px;
-		py += yd;
-
-		for (i=x1; i <= x2; i++)
+		for (j=y1; j <= y2; j++)
 		{
-			UINT8 pen = dp[dp_i];
-			if (pen != 0x3f)
+			UINT16 *p = bitmap->line[j];
+			int dp_i = (py * width) + px;
+			py += yd;
+
+			for (i=x1; i <= x2; i++)
 			{
-				int global_pen = pen + color*64;
-				UINT8 alpha = alpha_table[global_pen];
-				if (alpha)
+				UINT8 pen = dp[dp_i];
+				if (pen != 0x3f)
 				{
-					p[i] = alpha_blend16(p[i], gfx->colortable[global_pen]);
+					int global_pen = pen + color*64;
+					if (alpha_table[global_pen])
+						p[i] = alpha_blend16(p[i], gfx->colortable[global_pen]);
+					else
+						p[i] = gfx->colortable[global_pen];
 				}
-				else
-				{
-					p[i] = gfx->colortable[global_pen];
-				}
+				dp_i += xd;
 			}
-			dp_i += xd;
+		}
+	}
+	else
+	{
+		for (j=y1; j <= y2; j++)
+		{
+			UINT16 *p = bitmap->line[j];
+			int dp_i = (py * width) + px;
+			py += yd;
+
+			for (i=x1; i <= x2; i++)
+			{
+				UINT8 pen = dp[dp_i];
+				if (pen != 0x3f)
+					p[i] = gfx->colortable[pen + color*64];
+				dp_i += xd;
+			}
 		}
 	}
 }
@@ -377,26 +470,21 @@ static void draw_sprites(struct mame_bitmap *bitmap, const struct rectangle *cli
 	int tile_num, color;
 	int width, height;
 	int flip_x = 0, flip_y = 0;
-	int a;
-	int priority;
-//	int transparency;
+	int n;
 	int x,y, x1, y1;
 	const struct GfxElement *gfx = Machine->gfx[2];
 
 	if( layer_enable & 0x10 )
 		return;
 
-	for( a = 0x400 - 2; a >= 0; a -= 2 ) {
+	for (n = 0; n < spi_sprite_count[pri_mask]; n++)
+	{
+		int a = spi_sprite_list[pri_mask][n];
+		int use_alpha;
+
 		tile_num = (sprite_ram[a + 0] >> 16) & 0xffff;
 		if( sprite_ram[a + 1] & 0x1000 )
 			tile_num |= 0x10000;
-
-		if( !tile_num )
-			continue;
-
-		priority = (sprite_ram[a + 0] >> 6) & 0x3;
-		if( pri_mask != priority )
-			continue;
 
 		xpos = sprite_ram[a + 1] & 0x3ff;
 		if( xpos & 0x200 )
@@ -405,9 +493,7 @@ static void draw_sprites(struct mame_bitmap *bitmap, const struct rectangle *cli
 		if( ypos & 0x100 )
 			ypos |= 0xfe00;
 		color = (sprite_ram[a + 0] & 0x3f);
-
-		
-
+		use_alpha = spi_sprite_color_alpha[color];
 
 		width = ((sprite_ram[a + 0] >> 8) & 0x7) + 1;
 		height = ((sprite_ram[a + 0] >> 12) & 0x7) + 1;
@@ -427,13 +513,13 @@ static void draw_sprites(struct mame_bitmap *bitmap, const struct rectangle *cli
 
 		for( x=x1; x < width; x++ ) {
 			for( y=y1; y < height; y++ ) {
-			draw_blend_gfx(bitmap, cliprect, gfx, tile_num, color, flip_x, flip_y, xpos + sprite_xtable[flip_x][x], ypos + sprite_ytable[flip_y][y]);
-
+				draw_blend_gfx(bitmap, cliprect, gfx, tile_num, color, flip_x, flip_y,
+					xpos + sprite_xtable[flip_x][x], ypos + sprite_ytable[flip_y][y], use_alpha);
 
 				/* xpos seems to wrap-around to 0 at 512 */
 				if( (xpos + (16 * x) + 16) >= 512 ) {
-						draw_blend_gfx(bitmap, cliprect, gfx, tile_num, color, flip_x, flip_y, xpos - 512 + sprite_xtable[flip_x][x], ypos + sprite_ytable[flip_y][y]);
-
+					draw_blend_gfx(bitmap, cliprect, gfx, tile_num, color, flip_x, flip_y,
+						xpos - 512 + sprite_xtable[flip_x][x], ypos + sprite_ytable[flip_y][y], use_alpha);
 				}
 
 				tile_num++;
@@ -550,6 +636,8 @@ VIDEO_START( spi )
 	for (i = 6000; i < 6016; i++) { alpha_table[i] = 1; }
 	for (i = 6128; i < 6144; i++) { alpha_table[i] = 1; }
 
+	spi_build_sprite_tables();
+
 	region_length = memory_region_length(REGION_GFX2);
 
 	if (region_length <= 0x300000)
@@ -603,6 +691,24 @@ static void combine_tilemap(struct mame_bitmap *bitmap, const struct rectangle *
 	xscroll_mask = pen_bitmap->width - 1;
 	yscroll_mask = pen_bitmap->height - 1;
 
+	// Some SPI games enable rowscroll while every row uses the same offset.
+	// Collapse that case so the hot row loop does not fetch rowscroll per scanline.
+	if (rowscroll)
+	{
+		int rows = (int)yscroll_mask + 1;
+		int first = rowscroll[0];
+		for (i = 1; i < rows; i++)
+		{
+			if (rowscroll[i] != first)
+				break;
+		}
+		if (i == rows)
+		{
+			x += first;
+			rowscroll = NULL;
+		}
+	}
+
 	alpha_set_level(0x7f);
 
 	for (j=cliprect->min_y; j <= cliprect->max_y; j++)
@@ -647,6 +753,8 @@ VIDEO_UPDATE( spi )
 		mid_rowscroll	= NULL;
 		fore_rowscroll	= NULL;
 	}
+
+	spi_prepare_sprites();
 
 	if( layer_enable & 0x1 )
 		fillbitmap(bitmap, 0, cliprect);
