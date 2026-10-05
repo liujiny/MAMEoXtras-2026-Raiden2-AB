@@ -99,7 +99,8 @@
         "build/rxdk/source/VCPPMame.h",
         "-fno-strict-aliasing",
         "-iquote",
-        "build/rxdk/source/MAME/src"
+        "build/rxdk/source/MAME/src",
+        "-fno-c++-static-destructors"
       ],
       "createIso": false,
       "outputDir": "out-release",

@@ -46,7 +46,7 @@ struct _osd_file
 
   BOOL      m_bIsSMB;
   CSMBHandler m_SmbHandler;
-} _osd_file;
+};
 
 
 //= G L O B A L = V A R S ==============================================
