@@ -82,6 +82,9 @@ def main():
     for s in raw[1][2]['sections']:
         if (s['name'].isdigit() or s['name'].startswith('CPU')) and not s['preload']:
             raise RuntimeError('Startup driver/CPU section is not preloaded: '+s['name'])
+        if ((s['name'].startswith('CPU') and s['name'][3:].isdigit()) or
+            (s['name'].isdigit() and s['name'] != '531')) and not (s['flags'] & 1):
+            raise RuntimeError('Sectionized CPU/driver region is not writable: '+s['name'])
 
     out.mkdir(parents=True)
     packaged=[]

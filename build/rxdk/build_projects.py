@@ -2,6 +2,8 @@
 from pathlib import Path
 import argparse, concurrent.futures, datetime, json, os, subprocess, sys
 
+from fix_xbe_section_permissions import restore_sectionizer_writable
+
 WORK=Path(__file__).resolve().parent
 ROOT=WORK.parent.parent
 
@@ -30,6 +32,10 @@ def main():
         print('START',name,start.isoformat(),flush=True)
         with log.open('xb') as f:
             proc=subprocess.run(command,cwd=ROOT,env=env,stdin=subprocess.DEVNULL,stdout=f,stderr=subprocess.STDOUT)
+        if proc.returncode == 0 and name == 'MAMEoX':
+            xbe=WORK/'projects'/name/'out-release'/'MAMEoX.xbe'
+            fixed=restore_sectionizer_writable(xbe)
+            print('SECTION_FLAGS',name,'RESTORED_WRITABLE',len(fixed),flush=True)
         lines=log.read_text(encoding='utf8',errors='replace').splitlines()
         errors=[line for line in lines if 'error:' in line or 'build failed:' in line]
         print('RESULT',name,'EXIT',proc.returncode,'ERROR_DIAGNOSTICS',len(errors),flush=True)
