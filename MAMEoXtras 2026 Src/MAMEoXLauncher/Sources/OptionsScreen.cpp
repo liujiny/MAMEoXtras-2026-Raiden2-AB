@@ -581,7 +581,11 @@ void COptionsScreen::DrawVideoPage( void )
             g_rendererOptions.m_frameskip == AUTO_FRAMESKIP ?  L"Auto" :
             (!g_rendererOptions.m_frameskip ? L"No frameskipping" : text ) );
 
-  DRAWITEM( L"Aspect ratio correction", g_rendererOptions.m_preserveAspectRatio ? L"Enabled" : L"Disabled" );
+  DRAWITEM( L"Screen scaling",
+            g_rendererOptions.m_screenScaling == SCREEN_SCALE_STRETCH ? L"Stretch" :
+            (g_rendererOptions.m_screenScaling == SCREEN_SCALE_MAME_ASPECT ? L"MAME Aspect" :
+            (g_rendererOptions.m_screenScaling == SCREEN_SCALE_ORIGINAL_FIT ? L"Original Fit" :
+             L"Original Fill")) );
 
   DRAWITEM( L"Screen rotation", 
             g_rendererOptions.m_screenRotation == SR_0 ? L"None" : 
@@ -1115,9 +1119,23 @@ void COptionsScreen::ChangeVideoPage( BOOL movingRight )
     }
     break;
 
-     // Preserve aspect ratio
+    // Screen scaling mode
   case 3:
-    g_rendererOptions.m_preserveAspectRatio = !g_rendererOptions.m_preserveAspectRatio;
+    if( !movingRight )
+    {
+      if( g_rendererOptions.m_screenScaling > SCREEN_SCALE_STRETCH )
+        g_rendererOptions.m_screenScaling = (screenscaling_t)( (LONG)g_rendererOptions.m_screenScaling - 1 );
+      else
+        g_rendererOptions.m_screenScaling = SCREEN_SCALE_ORIGINAL_FILL;
+    }
+    else
+    {
+      if( g_rendererOptions.m_screenScaling < SCREEN_SCALE_ORIGINAL_FILL )
+        g_rendererOptions.m_screenScaling = (screenscaling_t)( (LONG)g_rendererOptions.m_screenScaling + 1 );
+      else
+        g_rendererOptions.m_screenScaling = SCREEN_SCALE_STRETCH;
+    }
+    g_rendererOptions.m_preserveAspectRatio = (g_rendererOptions.m_screenScaling == SCREEN_SCALE_MAME_ASPECT);
     break;
 
     // Screen rotation

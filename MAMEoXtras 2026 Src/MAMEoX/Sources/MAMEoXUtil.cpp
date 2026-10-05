@@ -206,7 +206,15 @@ void LoadOptions( void )
   //Ebs VSYNC enabled by default
   g_rendererOptions.m_vsync =               iniFile.GetProfileInt( "Video", "VSYNC", TRUE );       // Enable VSYNC for game rendering
   g_rendererOptions.m_throttleFramerate =   iniFile.GetProfileInt( "Video", "ThrottleFramerate", TRUE ); // Sync only to vsync
-  g_rendererOptions.m_preserveAspectRatio = iniFile.GetProfileInt( "Video", "AspectRatioCorrection", TRUE );  // aspect ratio correction code
+  g_rendererOptions.m_preserveAspectRatio = iniFile.GetProfileInt( "Video", "AspectRatioCorrection", TRUE );  // legacy INI compatibility
+  {
+    INT32 scalingMode = iniFile.GetProfileInt( "Video", "ScreenScalingMode", -1 );
+    if( scalingMode < SCREEN_SCALE_STRETCH || scalingMode > SCREEN_SCALE_ORIGINAL_FILL )
+      g_rendererOptions.m_screenScaling = g_rendererOptions.m_preserveAspectRatio ? SCREEN_SCALE_MAME_ASPECT : SCREEN_SCALE_STRETCH;
+    else
+      g_rendererOptions.m_screenScaling = (screenscaling_t)scalingMode;
+    g_rendererOptions.m_preserveAspectRatio = (g_rendererOptions.m_screenScaling == SCREEN_SCALE_MAME_ASPECT);
+  }
   g_rendererOptions.m_screenRotation =      (screenrotation_t)iniFile.GetProfileInt( "Video", "ScreenRotation", SR_0 );
   g_rendererOptions.m_frameskip =           iniFile.GetProfileInt( "Video", "Frameskip", 4294967295 );
   g_rendererOptions.m_minFilter =           (D3DTEXTUREFILTERTYPE)iniFile.GetProfileInt( "Video", "MinificationFilter", D3DTEXF_LINEAR );
@@ -228,6 +236,10 @@ void LoadOptions( void )
     g_rendererOptions.m_magFilter = D3DTEXF_LINEAR;
   if( g_rendererOptions.m_screenRotation > SR_270 )
     g_rendererOptions.m_screenRotation = SR_0;
+  if( g_rendererOptions.m_screenScaling < SCREEN_SCALE_STRETCH ||
+      g_rendererOptions.m_screenScaling > SCREEN_SCALE_ORIGINAL_FILL )
+    g_rendererOptions.m_screenScaling = SCREEN_SCALE_STRETCH;
+  g_rendererOptions.m_preserveAspectRatio = (g_rendererOptions.m_screenScaling == SCREEN_SCALE_MAME_ASPECT);
 
   FLOAT xPercentage = iniFile.GetProfileFloat( "Video", "ScreenUsage_X", DEFAULT_SCREEN_X_PERCENTAGE );
   FLOAT yPercentage = iniFile.GetProfileFloat( "Video", "ScreenUsage_Y", DEFAULT_SCREEN_Y_PERCENTAGE );
@@ -403,7 +415,8 @@ void SaveOptions( void )
 
   iniFile.WriteProfileInt( "Video", "VSYNC", g_rendererOptions.m_vsync );       // Enable VSYNC for game rendering
   iniFile.WriteProfileInt( "Video", "ThrottleFramerate", g_rendererOptions.m_throttleFramerate ); // Sync only to vsync
-  iniFile.WriteProfileInt( "Video", "AspectRatioCorrection", g_rendererOptions.m_preserveAspectRatio );
+  iniFile.WriteProfileInt( "Video", "AspectRatioCorrection", g_rendererOptions.m_screenScaling == SCREEN_SCALE_MAME_ASPECT );
+  iniFile.WriteProfileInt( "Video", "ScreenScalingMode", g_rendererOptions.m_screenScaling );
   iniFile.WriteProfileInt( "Video", "MinificationFilter", g_rendererOptions.m_minFilter );
   iniFile.WriteProfileInt( "Video", "MagnificationFilter", g_rendererOptions.m_magFilter );
   iniFile.WriteProfileInt( "Video", "Frameskip", g_rendererOptions.m_frameskip );

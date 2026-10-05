@@ -791,73 +791,110 @@ static BOOL CreateRenderingQuad( void )
   FLOAT xpos = g_rendererOptions.m_screenUsageX;
   FLOAT ypos = g_rendererOptions.m_screenUsageY;
 
-  if( g_rendererOptions.m_screenRotation == SR_0 || g_rendererOptions.m_screenRotation == SR_180 )
+  /*
+   * There are three distinct scaling behaviours:
+   *
+   *  Stretch       - preserve the historical non-uniform full-screen fill.
+   *  MAME Aspect   - fit using the driver's declared display aspect ratio.
+   *  Original Fit  - use the actual visible texture width/height and shrink
+   *                  the output quad so the complete native image is visible.
+   *  Original Fill - keep the output quad full-size and crop the native image
+   *                  centrally so its aspect ratio is preserved without bars.
+   *
+   * "Original" intentionally uses visible pixel geometry instead of the MAME
+   * driver's aspect_x/aspect_y declaration.  Many arcade drivers declare 4:3
+   * even when their native visible bitmap is e.g. 320x224 or 384x224.
+   */
   {
+    const BOOL rotated = (g_rendererOptions.m_screenRotation == SR_90 ||
+                          g_rendererOptions.m_screenRotation == SR_270);
+    const double screenRatio = 640.0 / 480.0;
+    const double targetAspect = (ypos > 0.0f)
+                              ? screenRatio * ((double)xpos / (double)ypos)
+                              : screenRatio;
 
-    if( g_rendererOptions.m_preserveAspectRatio )
+    if( (g_rendererOptions.m_screenScaling == SCREEN_SCALE_ORIGINAL_FIT ||
+         g_rendererOptions.m_screenScaling == SCREEN_SCALE_ORIGINAL_FILL) &&
+        tu_r > tu_l && tv_b > tv_t && targetAspect > 0.0 )
     {
-        // Aspect ratio
-      double screenRatio = 640.0/480.0;
-      //double screenRatio = (640.0 * g_rendererOptions.m_screenUsageX)/(480.0 * g_rendererOptions.m_screenUsageY);
+      const double nativeWidth = (double)(tu_r - tu_l);
+      const double nativeHeight = (double)(tv_b - tv_t);
+      double aspectRatio = nativeWidth / nativeHeight;
 
-        // The desired aspect ratio for the game
-	    double aspectRatio = (double)g_createParams.aspect_x / (double)g_createParams.aspect_y;
+      if( rotated )
+        aspectRatio = 1.0 / aspectRatio;
+
+      if( g_rendererOptions.m_screenScaling == SCREEN_SCALE_ORIGINAL_FIT )
+      {
+        if( aspectRatio > targetAspect )
+          ypos = (FLOAT)((double)xpos * screenRatio / aspectRatio);
+        else if( aspectRatio < targetAspect )
+          xpos = (FLOAT)((double)ypos * aspectRatio / screenRatio);
+      }
+      else
+      {
+        /*
+         * Fill the configured output rectangle without non-uniform scaling.
+         * Crop the source axis that maps to the over-wide display dimension.
+         */
+        if( aspectRatio > targetAspect )
+        {
+          const double fraction = targetAspect / aspectRatio;
+          if( !rotated )
+          {
+            const FLOAT crop = (FLOAT)((tu_r - tu_l) * (1.0 - fraction) * 0.5);
+            tu_l += crop;
+            tu_r -= crop;
+          }
+          else
+          {
+            const FLOAT crop = (FLOAT)((tv_b - tv_t) * (1.0 - fraction) * 0.5);
+            tv_t += crop;
+            tv_b -= crop;
+          }
+        }
+        else if( aspectRatio < targetAspect )
+        {
+          const double fraction = aspectRatio / targetAspect;
+          if( !rotated )
+          {
+            const FLOAT crop = (FLOAT)((tv_b - tv_t) * (1.0 - fraction) * 0.5);
+            tv_t += crop;
+            tv_b -= crop;
+          }
+          else
+          {
+            const FLOAT crop = (FLOAT)((tu_r - tu_l) * (1.0 - fraction) * 0.5);
+            tu_l += crop;
+            tu_r -= crop;
+          }
+        }
+      }
+    }
+    else if( g_rendererOptions.m_screenScaling == SCREEN_SCALE_MAME_ASPECT &&
+             targetAspect > 0.0 )
+    {
+      /*
+       * MAME driver aspect correction.  This is the old Aspect Ratio
+       * Correction option expressed as a proper scaling mode, with the fit
+       * calculation corrected for non-4:3 declarations.
+       */
+      double aspectRatio = (double)g_createParams.aspect_x / (double)g_createParams.aspect_y;
+
       if( g_createParams.video_attributes & VIDEO_PIXEL_ASPECT_RATIO_1_2 )
         aspectRatio /= 2.0;
       else if( g_createParams.video_attributes & VIDEO_PIXEL_ASPECT_RATIO_2_1 )
         aspectRatio *= 2.0;
 
-        // The native screenRatio is 4/3
-        // so multiplying x by the desired aspect ratio will actually give us (x*4/3)*(aspectRatio)
-        // Therefore we have to first counteract the real screen ratio before applying the desired aspect ratio
+      if( rotated )
+        aspectRatio = 1.0 / aspectRatio;
 
-      if( aspectRatio > screenRatio )
-      {
-          // scale down y
-		  //Ebs look at this for game aspect fixing
-        ypos /= aspectRatio * screenRatio; 
-
-      }
-      else if( aspectRatio < screenRatio )
-      {
-          // Scale down x
-        xpos *= aspectRatio / screenRatio;
-      }
+      if( aspectRatio > targetAspect )
+        ypos = (FLOAT)((double)xpos * screenRatio / aspectRatio);
+      else if( aspectRatio < targetAspect )
+        xpos = (FLOAT)((double)ypos * aspectRatio / screenRatio);
     }
   }
-  else
-  {
-      // We're rendering sideways, so the aspect ratio of the monitor is different
-    if( g_rendererOptions.m_preserveAspectRatio )
-    {
-        // Aspect ratio
-      double screenRatio = 480.0/640.0;
-      //double screenRatio = (480.0 * g_rendererOptions.m_screenUsageY) / (640.0 * g_rendererOptions.m_screenUsageX);
-
-        // The desired aspect ratio for the game
-	    double aspectRatio = (double)g_createParams.aspect_x / (double)g_createParams.aspect_y;
-      if( g_createParams.video_attributes & VIDEO_PIXEL_ASPECT_RATIO_1_2 )
-        aspectRatio *= 2.0;
-      else if( g_createParams.video_attributes & VIDEO_PIXEL_ASPECT_RATIO_2_1 )
-        aspectRatio /= 2.0;
-
-        // The native screenRatio is 3/4
-        // so multiplying x by the desired aspect ratio will actually give us (x*3/4)*(aspectRatio)
-        // Therefore we have to first counteract the real screen ratio before applying the desired aspect ratio
-
-      if( aspectRatio > screenRatio )
-      {
-          // scale down y
-        xpos /= aspectRatio * screenRatio; 
-      }
-      else if( aspectRatio < screenRatio )
-      {
-          // Scale down x
-        ypos *= aspectRatio / screenRatio;
-      }
-    }
-  }
-
 
 
 	CUSTOMVERTEX *pVertices;

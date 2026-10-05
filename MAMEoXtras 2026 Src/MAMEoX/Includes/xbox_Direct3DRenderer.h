@@ -69,6 +69,14 @@ typedef enum screenrotation_t
   SR_270            // 270 degrees CW
 } screenrotation_t;
 
+typedef enum screenscaling_t
+{
+  SCREEN_SCALE_STRETCH = 0x00,   // Fill the configured output rectangle non-uniformly
+  SCREEN_SCALE_MAME_ASPECT,      // Preserve the MAME driver's declared display aspect
+  SCREEN_SCALE_ORIGINAL_FIT,     // Preserve native visible-pixel aspect; show all pixels
+  SCREEN_SCALE_ORIGINAL_FILL     // Preserve native visible-pixel aspect; crop to avoid bars
+} screenscaling_t;
+
 //= S T R U C T U R E S ================================================
 typedef struct RendererOptions_t
 {
@@ -79,8 +87,11 @@ typedef struct RendererOptions_t
 
   INT32                 m_frameskip;        //!< Frameskip level, -1 == auto, 0 = no frameskip
 
-    //! Whether or not to use aspect ratio correction code
-  BOOL                  m_preserveAspectRatio;    
+    //! Whether or not to use the legacy MAME driver aspect ratio correction
+  BOOL                  m_preserveAspectRatio;
+
+    //! How the native game image is scaled to the output rectangle
+  screenscaling_t       m_screenScaling;
 
     //! Whether or not to sync to vertical retrace
   BOOL                  m_vsync;
