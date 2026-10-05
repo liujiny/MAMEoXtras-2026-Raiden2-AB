@@ -437,23 +437,39 @@ osd_file *osd_fopen( int pathtype, int pathindex, const char *filename, const ch
 //---------------------------------------------------------------------
 //  osd_fflush
 //---------------------------------------------------------------------
-void osd_fflush( osd_file *file )
+int osd_fflush( osd_file *file )
 {
   if( !file )
-    return;
+    return 1;
 
-    // Flush the write buffer
+  // Flush the write buffer. Treat short writes as failures instead of
+  // silently advancing the logical file position past data not on disk.
   if( file->m_writeBufferBytes )
   {
-    DWORD result;
-    if( !WriteFile( file->m_handle, file->m_writeBuffer, file->m_writeBufferBytes, &result, NULL ) )
+    DWORD result = 0;
+    DWORD requested = (DWORD)file->m_writeBufferBytes;
+
+    if( !WriteFile( file->m_handle, file->m_writeBuffer, requested, &result, NULL ) ||
+        result != requested )
     {
-      PRINTMSG(( T_ERROR, "WriteFile failed! 0x%X", GetLastError() ));
-      return;
+      PRINTMSG(( T_ERROR, "WriteFile flush failed! wrote %lu/%lu, error 0x%X",
+                 result, requested, GetLastError() ));
+
+      if( result > 0 && result < requested )
+      {
+        memmove( file->m_writeBuffer,
+                 file->m_writeBuffer + result,
+                 requested - result );
+        file->m_writeBufferBytes = requested - result;
+        file->m_filepos += result;
+      }
+      return 1;
     }
+
     file->m_writeBufferBytes = 0;
     file->m_filepos += result;
   }
+  return 0;
 }
 
 
@@ -462,59 +478,61 @@ void osd_fflush( osd_file *file )
 //---------------------------------------------------------------------
 INT32 osd_fseek( osd_file *file, INT64 offset, int whence )
 {
-	  // Seek within a file
+  INT64 base;
+  INT64 target;
+
   if( !file )
     return 1;
 
   if ( file->m_bIsSMB )
-    file->m_SmbHandler.Seek(offset, whence);
-  else
+    return (file->m_SmbHandler.Seek(offset, whence) < 0) ? 1 : 0;
+
+  if( osd_fflush( file ) )
+    return 1;
+
+  switch( whence )
   {
-    osd_fflush( file );
+  case SEEK_SET:
+    base = 0;
+    break;
 
-    switch( whence )
-    {
-    case SEEK_SET:	
-      file->m_offset = offset;
-      break;
+  case SEEK_CUR:
+    base = (INT64)file->m_offset;
+    break;
 
-    case SEEK_CUR:	
-      file->m_offset += offset;
-      break;
+  case SEEK_END:
+    base = (INT64)file->m_end;
+    break;
 
-    case SEEK_END:
-      file->m_offset = file->m_end + offset;
-      break;
-
-    default:
-      PRINTMSG(( T_ERROR, "Invalid whence parameter in osd_fseek" ));
-      return 1;
-    }
-
-      // Validate arg
-    if( file->m_offset > file->m_end )
-    {
-      PRINTMSG(( T_ERROR, "Offset value too high or low in osd_fseek" ));
-      return 1;
-    }
-
-      // attempt to seek to the current location if we're not there already
-    if( file->m_offset != file->m_filepos )
-    {
-      LONG upperPos = (LONG)(file->m_offset >> 32);
-      DWORD result = SetFilePointer( file->m_handle, (UINT32)file->m_offset, &upperPos, FILE_BEGIN );
-      if (result == INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
-      {
-        file->m_filepos = ~0;
-        return 1; //length - bytes_left;
-      }
-      file->m_filepos = file->m_offset;
-      file->m_bufferbytes = 0;
-    }  
+  default:
+    PRINTMSG(( T_ERROR, "Invalid whence parameter in osd_fseek" ));
+    return 1;
   }
 
-	return 0;
+  target = base + offset;
+  if( target < 0 || (UINT64)target > file->m_end )
+  {
+    PRINTMSG(( T_ERROR, "Offset value too high or low in osd_fseek" ));
+    return 1;
+  }
+
+  if( (UINT64)target != file->m_filepos )
+  {
+    LONG upperPos = (LONG)(((UINT64)target) >> 32);
+    DWORD result = SetFilePointer( file->m_handle, (UINT32)target, &upperPos, FILE_BEGIN );
+    if (result == INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
+    {
+      file->m_filepos = ~0;
+      return 1;
+    }
+    file->m_filepos = (UINT64)target;
+    file->m_bufferbytes = 0;
+  }
+
+  file->m_offset = (UINT64)target;
+  return 0;
 }
+
 
 //---------------------------------------------------------------------
 //	osd_ftell
@@ -556,7 +574,8 @@ UINT32 osd_fread( osd_file *file, void *buffer, UINT32 length )
   UINT32 bytes_to_copy;
   DWORD result;
 
-  osd_fflush( file );
+  if( osd_fflush( file ) )
+    return 0;
 
   if ( file->m_bIsSMB )
   {
@@ -589,7 +608,8 @@ UINT32 osd_fread( osd_file *file, void *buffer, UINT32 length )
       // read as much of the buffer as we can
       file->m_bufferbase = file->m_offset;
       file->m_bufferbytes = 0;
-      ReadFile(file->m_handle, file->m_buffer, (DWORD)FILE_BUFFER_SIZE, &file->m_bufferbytes, NULL);
+      if( !ReadFile(file->m_handle, file->m_buffer, (DWORD)FILE_BUFFER_SIZE, &file->m_bufferbytes, NULL) )
+        return 0;
       file->m_filepos += file->m_bufferbytes;
 
       // copy it out
@@ -608,7 +628,9 @@ UINT32 osd_fread( osd_file *file, void *buffer, UINT32 length )
     else
     {
       // do the read
-      ReadFile(file->m_handle, buffer, bytes_left, &result, NULL);
+      result = 0;
+      if( !ReadFile(file->m_handle, buffer, bytes_left, &result, NULL) )
+        return 0;
       file->m_filepos += result;
 
       // adjust the pointers and return
@@ -655,9 +677,11 @@ UINT32 osd_fwrite( osd_file *file, const void *buffer, UINT32 length )
   else
   {
       // Flush the buffer and then write the data
-    osd_fflush( file );
+    if( osd_fflush( file ) )
+      return 0;
 
       // Write the requested data to the file as well
+    result = 0;
     if( !WriteFile( file->m_handle, buffer, length, &result, NULL ) )
     {
       PRINTMSG(( T_ERROR, "WriteFile failed! 0x%X", GetLastError() ));
@@ -667,7 +691,7 @@ UINT32 osd_fwrite( osd_file *file, const void *buffer, UINT32 length )
   }
 
     // adjust the pointers
-  file->m_offset += length;
+  file->m_offset += result;
   if( file->m_offset > file->m_end )
     file->m_end = file->m_offset;
 
@@ -685,7 +709,8 @@ void osd_fclose( osd_file *file )
   }
   else
   {
-    osd_fflush( file );
+    if( osd_fflush( file ) )
+      PRINTMSG(( T_ERROR, "Failed flushing file before close" ));
 
       // close the handle and clear it out
     if (file->m_handle)
