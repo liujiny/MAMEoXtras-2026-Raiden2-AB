@@ -438,8 +438,9 @@ void cpu_run(void)
 			if (loadsave_schedule != LOADSAVE_NONE)
 				handle_loadsave();
 			
-			/* execute CPUs */
-			cpu_timeslice();
+			/* execute CPUs unless a failed state load scheduled a reset */
+			if (!time_to_quit && !time_to_reset)
+				cpu_timeslice();
 
 			profiler_mark(PROFILER_END);
 		}
@@ -504,6 +505,7 @@ static void handle_save(void)
 {
 	mame_file *file;
 	int cpunum;
+	int error = 0;
 
 	/* open the file */
 	file = mame_fopen(Machine->gamedrv->name, loadsave_schedule_name, FILETYPE_STATE, 1);
@@ -511,14 +513,17 @@ static void handle_save(void)
 	if (file)
 	{
 		/* write the save state */
-		state_save_save_begin(file);
+		error = state_save_save_begin(file);
 
 		/* write tag 0 */
-		state_save_set_current_tag(0);
-		state_save_save_continue();
+		if (!error)
+		{
+			state_save_set_current_tag(0);
+			error = state_save_save_continue();
+		}
 
 		/* loop over CPUs */
-		for (cpunum = 0; cpunum < cpu_gettotalcpu(); cpunum++)
+		for (cpunum = 0; cpunum < cpu_gettotalcpu() && !error; cpunum++)
 		{
 			cpuintrf_push_context(cpunum);
 
@@ -527,14 +532,20 @@ static void handle_save(void)
 
 			/* save the CPU data */
 			state_save_set_current_tag(cpunum + 1);
-			state_save_save_continue();
+			error = state_save_save_continue();
 
 			cpuintrf_pop_context();
 		}
 
-		/* finish and close */
-		state_save_save_finish();
+		/* finish, or discard the in-progress state on error */
+		if (!error)
+			error = state_save_save_finish();
+		else
+			state_save_save_abort();
+
 		mame_fclose(file);
+		if (error)
+			usrintf_showmessage("Error: Failed to save state");
 	}
 	else
 	{
@@ -557,6 +568,8 @@ static void handle_load(void)
 {
 	mame_file *file;
 	int cpunum;
+	int error = 0;
+	int began = 0;
 
 	/* open the file */
 	file = mame_fopen(Machine->gamedrv->name, loadsave_schedule_name, FILETYPE_STATE, 0);
@@ -564,15 +577,18 @@ static void handle_load(void)
 	/* if successful, load it */
 	if (file)
 	{
-		/* start loading */
-		if (!state_save_load_begin(file))
+		/* validate the complete file before changing live machine state */
+		error = state_save_load_begin(file);
+		if (!error)
 		{
+			began = 1;
+
 			/* read tag 0 */
 			state_save_set_current_tag(0);
-			state_save_load_continue();
+			error = state_save_load_continue();
 
 			/* loop over CPUs */
-			for (cpunum = 0; cpunum < cpu_gettotalcpu(); cpunum++)
+			for (cpunum = 0; cpunum < cpu_gettotalcpu() && !error; cpunum++)
 			{
 				cpuintrf_push_context(cpunum);
 
@@ -581,15 +597,24 @@ static void handle_load(void)
 
 				/* load the CPU data */
 				state_save_set_current_tag(cpunum + 1);
-				state_save_load_continue();
+				error = state_save_load_continue();
 
 				cpuintrf_pop_context();
 			}
 
-			/* finish and close */
 			state_save_load_finish();
 		}
 		mame_fclose(file);
+
+		/*
+		 * A mid-load I/O failure may already have changed part of the live
+		 * machine. Reset instead of executing with a half-restored state.
+		 */
+		if (error && began)
+		{
+			usrintf_showmessage("Error: Failed to load state; resetting machine");
+			machine_reset();
+		}
 	}
 	else
 	{

@@ -92,6 +92,7 @@ static int ss_current_tag;
 static unsigned char *ss_dump_array;
 static mame_file *ss_dump_file;
 static unsigned int ss_dump_size;
+static unsigned char ss_dump_flags;
 
 #ifdef MESS
 static const char ss_magic_num[8] = { 'M', 'E', 'S', 'S', 'S', 'A', 'V', 'E' };
@@ -400,53 +401,138 @@ static void ss_c8(unsigned char *data, unsigned size)
 }
 
 
-void state_save_save_begin(mame_file *file)
+static unsigned int ss_compute_layout(void)
 {
-	int i ;
-	char ch ;
-	unsigned char *wrbuf ;
 	ss_module *m;
-	TRACE(logerror("Beginning save\n"));
-	ss_dump_size = 0x18;
-	ss_dump_file = file;
+	unsigned int offset = 0x18;
+
 	for(m = ss_registry; m; m=m->next) {
 		int i;
 		for(i=0; i<MAX_INSTANCES; i++) {
 			ss_entry *e;
 			for(e = m->instances[i]; e; e=e->next) {
-				e->offset = ss_dump_size;
-				ss_dump_size += ss_size[e->type]*e->size;
+				e->offset = offset;
+				offset += ss_size[e->type]*e->size;
 			}
 		}
 	}
+	return offset;
+}
+
+static int ss_seek(mame_file *file, UINT64 offset)
+{
+	if (mame_fseek(file, offset, SEEK_SET))
+	{
+		logerror("Save state seek failed at %u\n", (unsigned)offset);
+		return 1;
+	}
+	return 0;
+}
+
+static int ss_write_exact(mame_file *file, const void *buffer, UINT32 length)
+{
+	const UINT8 *src = (const UINT8 *)buffer;
+	UINT32 done = 0;
+
+	while (done < length)
+	{
+		UINT32 written = mame_fwrite(file, src + done, length - done);
+		if (!written)
+		{
+			logerror("Save state write failed after %u/%u bytes\n", done, length);
+			return 1;
+		}
+		done += written;
+	}
+	return 0;
+}
+
+static int ss_read_exact(mame_file *file, void *buffer, UINT32 length)
+{
+	UINT8 *dst = (UINT8 *)buffer;
+	UINT32 done = 0;
+
+	while (done < length)
+	{
+		UINT32 got = mame_fread(file, dst + done, length - done);
+		if (!got)
+		{
+			logerror("Save state read failed after %u/%u bytes\n", done, length);
+			return 1;
+		}
+		done += got;
+	}
+	return 0;
+}
+
+int state_save_save_begin(mame_file *file)
+{
+	static const UINT8 zeroes[4096] = { 0 };
+	UINT64 current_size;
+	UINT64 remaining;
+
+	TRACE(logerror("Beginning save\n"));
+	ss_dump_file = file;
+	ss_dump_size = ss_compute_layout();
 
 	TRACE(logerror("   total size %u\n", ss_dump_size));
 
-	ch = 0 ;
+	if (!ss_dump_file)
+		return 1;
 
-	//wrbuf = osd_malloc( 64*1024 ) ;
+	/*
+	 * Xbox state saving writes registry entries by absolute offset.  The Xbox
+	 * osd_fseek implementation rejects seeks beyond EOF, so a brand-new .sta
+	 * file must be extended before the first state entry (offset >= 0x18) is
+	 * written.  The original MAMEoX source carried this pre-sizing step but it
+	 * was commented out, leaving new slots vulnerable to silent mis-positioned
+	 * writes and later header overwrite.
+	 */
+	current_size = mame_fsize(ss_dump_file);
+	if (current_size < ss_dump_size)
+	{
+		if (mame_fseek(ss_dump_file, 0, SEEK_END))
+			goto error;
 
-	//memset( wrbuf, 0, 64*1024 ) ;
-	//mame_fseek( file, 0, SEEK_SET ) ;
+		remaining = (UINT64)ss_dump_size - current_size;
+		while (remaining)
+		{
+			UINT32 chunk = remaining > sizeof(zeroes) ? sizeof(zeroes) : (UINT32)remaining;
+			if (ss_write_exact(ss_dump_file, zeroes, chunk))
+				goto error;
+			remaining -= chunk;
+		}
+	}
 
-	//for ( i = 0 ; i < ss_dump_size ; i++ )
-	//{
-		//mame_fwrite( file, &ch, 1 ) ;
-	//}
+	if (ss_seek(ss_dump_file, 0))
+		goto error;
 
-	//ss_dump_array = osd_malloc(ss_dump_size);
-	//if (ss_dump_array == NULL)
-	//{
-		//logerror ("malloc failed in state_save_save_begin\n");
-	//}
+	/*
+	 * Invalidate the magic while the body is being rewritten.  If a write
+	 * later fails, the half-updated file will be rejected instead of being
+	 * loaded as if it were complete.
+	 */
+	if (ss_write_exact(ss_dump_file, zeroes, 8) ||
+		mame_fseek(ss_dump_file, 0, SEEK_CUR))
+		goto error;
+
+	return 0;
+
+error:
+	ss_dump_file = 0;
+	ss_dump_size = 0;
+	return 1;
 }
 
-void state_save_save_continue(void)
+int state_save_save_continue(void)
 {
 	ss_module *m;
-	ss_func * f;
-	unsigned char ch ;
+	ss_func *f;
 	int count = 0;
+
+	if (!ss_dump_file)
+		return 1;
+
 	TRACE(logerror("Saving tag %d\n", ss_current_tag));
 	TRACE(logerror("  calling pre-save functions\n"));
 	f = ss_prefunc_reg;
@@ -459,50 +545,61 @@ void state_save_save_continue(void)
 	}
 	TRACE(logerror("    %d functions called\n", count));
 	TRACE(logerror("  copying data\n"));
+
 	for(m = ss_registry; m; m=m->next) {
 		int i;
 		for(i=0; i<MAX_INSTANCES; i++) {
 			ss_entry *e;
 			for(e = m->instances[i]; e; e=e->next)
 				if(e->tag == ss_current_tag) {
+					UINT32 bytes = ss_size[e->type] * e->size;
+
+					if (!e->data)
+					{
+						logerror("Save state entry has NULL data: %s.%d.%s\n", m->name, i, e->name);
+						return 1;
+					}
+					if ((UINT64)e->offset + bytes > ss_dump_size)
+					{
+						logerror("Save state entry exceeds file layout: %s.%d.%s\n", m->name, i, e->name);
+						return 1;
+					}
+					if (ss_seek(ss_dump_file, e->offset))
+						return 1;
+
 					if(e->type == SS_INT) {
 						int v = *(int *)(e->data);
-						mame_fseek( ss_dump_file, e->offset, SEEK_SET ) ;
-
-						ch = v ;
-						mame_fwrite( ss_dump_file, &ch, 1 ) ;
-						ch = v>>8 ;
-						mame_fwrite( ss_dump_file, &ch, 1 ) ;
-						ch = v>>16 ;
-						mame_fwrite( ss_dump_file, &ch, 1 ) ;
-						ch = v>>24 ;
-						mame_fwrite( ss_dump_file, &ch, 1 ) ;
-
-						//ss_dump_array[e->offset]   = v ;
-						//ss_dump_array[e->offset+1] = v >> 8;
-						//ss_dump_array[e->offset+2] = v >> 16;
-						//ss_dump_array[e->offset+3] = v >> 24;
+						UINT8 value[4];
+						value[0] = v;
+						value[1] = v >> 8;
+						value[2] = v >> 16;
+						value[3] = v >> 24;
+						if (ss_write_exact(ss_dump_file, value, sizeof(value)))
+							return 1;
 						TRACE(logerror("    %s.%d.%s: %x..%x\n", m->name, i, e->name, e->offset, e->offset+3));
-					} else if ( e->data ) {
-						mame_fseek( ss_dump_file, e->offset, SEEK_SET ) ;
-						mame_fwrite( ss_dump_file, e->data, ss_size[e->type]*e->size ) ;
-
-						//memcpy(ss_dump_array + e->offset, e->data, ss_size[e->type]*e->size);
-						TRACE(logerror("    %s.%d.%s: %x..%x\n", m->name, i, e->name, e->offset, e->offset+ss_size[e->type]*e->size-1));
+					} else {
+						if (ss_write_exact(ss_dump_file, e->data, bytes))
+							return 1;
+						TRACE(logerror("    %s.%d.%s: %x..%x\n", m->name, i, e->name, e->offset, e->offset+bytes-1));
 					}
 				}
 		}
 	}
+	return 0;
 }
 
-void state_save_save_finish(void)
+int state_save_save_finish(void)
 {
 	UINT32 signature;
-	unsigned char ch ;
-	int i ;
+	UINT8 header[0x18];
 	unsigned char flags = 0;
+	unsigned int name_len;
+	int error = 0;
 
 	TRACE(logerror("Finishing save\n"));
+
+	if (!ss_dump_file)
+		return 1;
 
 	signature = ss_get_signature();
 	if(!Machine->sample_rate)
@@ -512,50 +609,32 @@ void state_save_save_finish(void)
 	flags |= SS_MSB_FIRST;
 #endif
 
-	mame_fseek( ss_dump_file, 0, SEEK_SET ) ;
-	mame_fwrite( ss_dump_file, ss_magic_num, 8 ) ;
+	memset(header, 0, sizeof(header));
+	memcpy(header, ss_magic_num, 8);
+	header[8] = 1;
+	header[9] = flags;
+	name_len = strlen(Machine->gamedrv->name);
+	if (name_len > 9)
+		name_len = 9;
+	memcpy(header + 0x0a, Machine->gamedrv->name, name_len);
+	header[0x14] = signature;
+	header[0x15] = signature >> 8;
+	header[0x16] = signature >> 16;
+	header[0x17] = signature >> 24;
 
-	//memcpy(ss_dump_array, ss_magic_num, 8);
+	if (ss_seek(ss_dump_file, 0) ||
+		ss_write_exact(ss_dump_file, header, sizeof(header)) ||
+		mame_fseek(ss_dump_file, 0, SEEK_CUR))
+		error = 1;
 
-	ch = 1 ;
-	mame_fwrite( ss_dump_file, &ch, 1 ) ;
+	ss_dump_array = 0;
+	ss_dump_size = 0;
+	ss_dump_file = 0;
+	return error;
+}
 
-	//ss_dump_array[8] = 1;
-
-	mame_fwrite( ss_dump_file, &flags, 1 ) ;
-
-	//ss_dump_array[9] = flags;
-
-	ch = 0 ;
-	for ( i = 0 ; i < 10 ; i++ )
-		mame_fwrite( ss_dump_file, &ch, 1 ) ;
-
-	//memset(ss_dump_array+0xa, 0, 10);
-
-	mame_fseek( ss_dump_file, 0x0a, SEEK_SET ) ;
-
-	mame_fwrite( ss_dump_file, Machine->gamedrv->name, strlen( Machine->gamedrv->name ) ) ;
-
-	//strcpy((char *)ss_dump_array+0xa, Machine->gamedrv->name);
-
-	mame_fseek( ss_dump_file, 0x14, SEEK_SET ) ;
-
-	ch = signature ;
-	mame_fwrite( ss_dump_file, &ch, 1 ) ;
-	ch = signature >> 8;
-	mame_fwrite( ss_dump_file, &ch, 1 ) ;
-	ch = signature >> 16;
-	mame_fwrite( ss_dump_file, &ch, 1 ) ;
-	ch = signature >> 24;
-	mame_fwrite( ss_dump_file, &ch, 1 ) ;
-
-	//ss_dump_array[0x14] = signature;
-	//ss_dump_array[0x15] = signature >> 8;
-	//ss_dump_array[0x16] = signature >> 16;
-	//ss_dump_array[0x17] = signature >> 24;
-
-	//mame_fwrite(ss_dump_file, ss_dump_array, ss_dump_size);
-	//free(ss_dump_array);
+void state_save_save_abort(void)
+{
 	ss_dump_array = 0;
 	ss_dump_size = 0;
 	ss_dump_file = 0;
@@ -614,7 +693,12 @@ int state_save_check_file(mame_file *file, const char *gamename, void (CLIB_DECL
 {
 	unsigned char header[0x18];
 
-	mame_fseek(file, 0, SEEK_SET);
+	if (mame_fseek(file, 0, SEEK_SET))
+	{
+		if (errormsg)
+			errormsg("Could not seek " APPNAME " save file");
+		return -1;
+	}
 	
 	if (mame_fread(file, header, sizeof(header)) != sizeof(header))
 	{
@@ -628,33 +712,36 @@ int state_save_check_file(mame_file *file, const char *gamename, void (CLIB_DECL
 int state_save_load_begin(mame_file *file)
 {
 	unsigned char header[0x18];
-	unsigned char ch ;
-	ss_module *m;
-	unsigned int offset = 0;
+	UINT64 file_size;
 	UINT32 signature;
 
 	TRACE(logerror("Beginning load\n"));
 
-	signature = ss_get_signature();
-
-	ss_dump_size = mame_fsize(file);
-	//ss_dump_array = osd_malloc(ss_dump_size);
 	ss_dump_file = file;
-	//mame_fread(ss_dump_file, ss_dump_array, ss_dump_size);
+	ss_dump_size = ss_compute_layout();
+	ss_dump_flags = 0;
+	if (!ss_dump_file)
+		goto bad;
 
+	file_size = mame_fsize(ss_dump_file);
+	if (file_size < ss_dump_size)
+	{
+		usrintf_showmessage("Error: Save state file is truncated");
+		logerror("Save state file too small: %u bytes, expected at least %u\n",
+			(unsigned)file_size, ss_dump_size);
+		goto bad;
+	}
 
-	mame_fseek(ss_dump_file, 0, SEEK_SET);
-	
-	if (mame_fread(ss_dump_file, header, sizeof(header)) != sizeof(header))
-		goto bad ;
+	signature = ss_get_signature();
+	if (ss_seek(ss_dump_file, 0) ||
+		ss_read_exact(ss_dump_file, header, sizeof(header)))
+		goto bad;
 
-
-	//if (ss_check_header(ss_dump_array, NULL, signature, usrintf_showmessage, "Error: "))
 	if (ss_check_header(header, NULL, signature, usrintf_showmessage, "Error: "))
 		goto bad;
 
-	//if(ss_dump_array[9] & SS_NO_SOUND)
-	if(header[9] & SS_NO_SOUND)
+	ss_dump_flags = header[9];
+	if(ss_dump_flags & SS_NO_SOUND)
 	{
 		if(Machine->sample_rate)
 			usrintf_showmessage("Warning: Game was saved with sound off, but sound is on.  Result may be interesting.");
@@ -664,42 +751,29 @@ int state_save_load_begin(mame_file *file)
 		if(!Machine->sample_rate)
 			usrintf_showmessage("Warning: Game was saved with sound on, but sound is off.  Result may be interesting.");
 	}
-
-	offset = 0x18;
-	for(m = ss_registry; m; m=m->next) {
-		int i;
-		for(i=0; i<MAX_INSTANCES; i++) {
-			ss_entry *e;
-			for(e = m->instances[i]; e; e=e->next) {
-				e->offset = offset;
-				offset += ss_size[e->type]*e->size;
-			}
-		}
-	}
 	return 0;
 
- bad:
-	//free(ss_dump_array);
+bad:
+	ss_dump_file = 0;
+	ss_dump_size = 0;
+	ss_dump_flags = 0;
 	return 1;
 }
 
-void state_save_load_continue(void)
+int state_save_load_continue(void)
 {
-	unsigned char ch1, ch2, ch3, ch4 ;
 	ss_module *m;
-	ss_func * f;
+	ss_func *f;
 	int count = 0;
 	int need_convert;
 
-	mame_fseek( ss_dump_file, 9, SEEK_SET ) ;
-	mame_fread( ss_dump_file, &ch1, 1 ) ;
+	if (!ss_dump_file)
+		return 1;
 
 #ifdef LSB_FIRST
-	//need_convert = (ss_dump_array[9] & SS_MSB_FIRST) != 0;
-	need_convert = (ch1 & SS_MSB_FIRST) != 0;
+	need_convert = (ss_dump_flags & SS_MSB_FIRST) != 0;
 #else
-	//need_convert = (ss_dump_array[9] & SS_MSB_FIRST) == 0;
-	need_convert = (ch1 & SS_MSB_FIRST) == 0;
+	need_convert = (ss_dump_flags & SS_MSB_FIRST) == 0;
 #endif
 
 	TRACE(logerror("Loading tag %d\n", ss_current_tag));
@@ -710,30 +784,38 @@ void state_save_load_continue(void)
 			ss_entry *e;
 			for(e = m->instances[i]; e; e=e->next)
 				if(e->tag == ss_current_tag) {
+					UINT32 bytes = ss_size[e->type] * e->size;
+
+					if (!e->data)
+					{
+						logerror("Save state entry has NULL data: %s.%d.%s\n", m->name, i, e->name);
+						return 1;
+					}
+					if ((UINT64)e->offset + bytes > ss_dump_size)
+					{
+						logerror("Save state entry exceeds file layout: %s.%d.%s\n", m->name, i, e->name);
+						return 1;
+					}
+					if (ss_seek(ss_dump_file, e->offset))
+						return 1;
+
 					if(e->type == SS_INT) {
+						UINT8 value[4];
 						int v;
-						mame_fseek( ss_dump_file, e->offset, SEEK_SET ) ;
-						mame_fread( ss_dump_file, &ch1, 1 ) ;
-						mame_fread( ss_dump_file, &ch2, 1 ) ;
-						mame_fread( ss_dump_file, &ch3, 1 ) ;
-						mame_fread( ss_dump_file, &ch4, 1 ) ;
-						v = ch1
-							| ( ch2 << 8)
-							| ( ch3 << 16)
-							| ( ch4 << 24);
-						//v = ss_dump_array[e->offset]
-							//| (ss_dump_array[e->offset+1] << 8)
-							//| (ss_dump_array[e->offset+2] << 16)
-							//| (ss_dump_array[e->offset+3] << 24);
+						if (ss_read_exact(ss_dump_file, value, sizeof(value)))
+							return 1;
+						v = value[0]
+							| (value[1] << 8)
+							| (value[2] << 16)
+							| (value[3] << 24);
 						TRACE(logerror("    %s.%d.%s: %x..%x\n", m->name, i, e->name, e->offset, e->offset+3));
 						*(int *)(e->data) = v;
 					} else {
-						mame_fseek( ss_dump_file, e->offset, SEEK_SET ) ;
-						mame_fread( ss_dump_file, e->data, ss_size[e->type]*e->size ) ;
-						//memcpy(e->data, ss_dump_array + e->offset, ss_size[e->type]*e->size);
+						if (ss_read_exact(ss_dump_file, e->data, bytes))
+							return 1;
 						if (need_convert && ss_conv[e->type])
 							ss_conv[e->type](e->data, e->size);
-						TRACE(logerror("    %s.%d.%s: %x..%x\n", m->name, i, e->name, e->offset, e->offset+ss_size[e->type]*e->size-1));
+						TRACE(logerror("    %s.%d.%s: %x..%x\n", m->name, i, e->name, e->offset, e->offset+bytes-1));
 					}
 				}
 		}
@@ -748,6 +830,7 @@ void state_save_load_continue(void)
 		f = f->next;
 	}
 	TRACE(logerror("    %d functions called\n", count));
+	return 0;
 }
 
 void state_save_load_finish(void)
@@ -757,6 +840,7 @@ void state_save_load_finish(void)
 	ss_dump_array = 0;
 	ss_dump_size = 0;
 	ss_dump_file = 0;
+	ss_dump_flags = 0;
 }
 
 void state_save_dump_registry(void)

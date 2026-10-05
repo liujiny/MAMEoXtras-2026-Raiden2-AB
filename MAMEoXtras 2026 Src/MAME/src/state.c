@@ -400,7 +400,7 @@ static void ss_c8(unsigned char *data, unsigned size)
 }
 
 
-void state_save_save_begin(mame_file *file)
+int state_save_save_begin(mame_file *file)
 {
 	ss_module *m;
 	TRACE(logerror("Beginning save\n"));
@@ -421,15 +421,22 @@ void state_save_save_begin(mame_file *file)
 	ss_dump_array = osd_malloc(ss_dump_size);
 	if (ss_dump_array == NULL)
 	{
-		logerror ("malloc failed in state_save_save_begin\n");
+		logerror("malloc failed in state_save_save_begin\n");
+		ss_dump_file = 0;
+		ss_dump_size = 0;
+		return 1;
 	}
+	return 0;
 }
 
-void state_save_save_continue(void)
+int state_save_save_continue(void)
 {
 	ss_module *m;
-	ss_func * f;
+	ss_func *f;
 	int count = 0;
+	if (!ss_dump_array)
+		return 1;
+
 	TRACE(logerror("Saving tag %d\n", ss_current_tag));
 	TRACE(logerror("  calling pre-save functions\n"));
 	f = ss_prefunc_reg;
@@ -448,28 +455,35 @@ void state_save_save_continue(void)
 			ss_entry *e;
 			for(e = m->instances[i]; e; e=e->next)
 				if(e->tag == ss_current_tag) {
+					UINT32 bytes = ss_size[e->type] * e->size;
+					if (!e->data || (UINT64)e->offset + bytes > ss_dump_size)
+						return 1;
 					if(e->type == SS_INT) {
 						int v = *(int *)(e->data);
-						ss_dump_array[e->offset]   = v ;
+						ss_dump_array[e->offset]   = v;
 						ss_dump_array[e->offset+1] = v >> 8;
 						ss_dump_array[e->offset+2] = v >> 16;
 						ss_dump_array[e->offset+3] = v >> 24;
 						TRACE(logerror("    %s.%d.%s: %x..%x\n", m->name, i, e->name, e->offset, e->offset+3));
-					} else if ( e->data ) {
-						memcpy(ss_dump_array + e->offset, e->data, ss_size[e->type]*e->size);
-						TRACE(logerror("    %s.%d.%s: %x..%x\n", m->name, i, e->name, e->offset, e->offset+ss_size[e->type]*e->size-1));
+					} else {
+						memcpy(ss_dump_array + e->offset, e->data, bytes);
+						TRACE(logerror("    %s.%d.%s: %x..%x\n", m->name, i, e->name, e->offset, e->offset+bytes-1));
 					}
 				}
 		}
 	}
+	return 0;
 }
 
-void state_save_save_finish(void)
+int state_save_save_finish(void)
 {
 	UINT32 signature;
 	unsigned char flags = 0;
+	int error;
 
 	TRACE(logerror("Finishing save\n"));
+	if (!ss_dump_array || !ss_dump_file)
+		return 1;
 
 	signature = ss_get_signature();
 	if(!Machine->sample_rate)
@@ -483,15 +497,25 @@ void state_save_save_finish(void)
 	ss_dump_array[8] = 1;
 	ss_dump_array[9] = flags;
 	memset(ss_dump_array+0xa, 0, 10);
-	strcpy((char *)ss_dump_array+0xa, Machine->gamedrv->name);
+	strncpy((char *)ss_dump_array+0xa, Machine->gamedrv->name, 9);
 
 	ss_dump_array[0x14] = signature;
 	ss_dump_array[0x15] = signature >> 8;
 	ss_dump_array[0x16] = signature >> 16;
 	ss_dump_array[0x17] = signature >> 24;
 
-	mame_fwrite(ss_dump_file, ss_dump_array, ss_dump_size);
+	error = (mame_fwrite(ss_dump_file, ss_dump_array, ss_dump_size) != ss_dump_size);
 	free(ss_dump_array);
+	ss_dump_array = 0;
+	ss_dump_size = 0;
+	ss_dump_file = 0;
+	return error;
+}
+
+void state_save_save_abort(void)
+{
+	if (ss_dump_array)
+		free(ss_dump_array);
 	ss_dump_array = 0;
 	ss_dump_size = 0;
 	ss_dump_file = 0;
@@ -550,7 +574,12 @@ int state_save_check_file(mame_file *file, const char *gamename, void (CLIB_DECL
 {
 	unsigned char header[0x18];
 
-	mame_fseek(file, 0, SEEK_SET);
+	if (mame_fseek(file, 0, SEEK_SET))
+	{
+		if (errormsg)
+			errormsg("Could not seek " APPNAME " save file");
+		return -1;
+	}
 	
 	if (mame_fread(file, header, sizeof(header)) != sizeof(header))
 	{
@@ -572,9 +601,16 @@ int state_save_load_begin(mame_file *file)
 	signature = ss_get_signature();
 
 	ss_dump_size = mame_fsize(file);
+	if (ss_dump_size < 0x18)
+		goto bad;
+
 	ss_dump_array = osd_malloc(ss_dump_size);
 	ss_dump_file = file;
-	mame_fread(ss_dump_file, ss_dump_array, ss_dump_size);
+	if (!ss_dump_array)
+		goto bad;
+	if (mame_fseek(ss_dump_file, 0, SEEK_SET) ||
+		mame_fread(ss_dump_file, ss_dump_array, ss_dump_size) != ss_dump_size)
+		goto bad;
 
 	if (ss_check_header(ss_dump_array, NULL, signature, usrintf_showmessage, "Error: "))
 		goto bad;
@@ -601,19 +637,28 @@ int state_save_load_begin(mame_file *file)
 			}
 		}
 	}
+	if (offset > ss_dump_size)
+		goto bad;
 	return 0;
 
- bad:
-	free(ss_dump_array);
+bad:
+	if (ss_dump_array)
+		free(ss_dump_array);
+	ss_dump_array = 0;
+	ss_dump_size = 0;
+	ss_dump_file = 0;
 	return 1;
 }
 
-void state_save_load_continue(void)
+int state_save_load_continue(void)
 {
 	ss_module *m;
-	ss_func * f;
+	ss_func *f;
 	int count = 0;
 	int need_convert;
+
+	if (!ss_dump_array)
+		return 1;
 
 #ifdef LSB_FIRST
 	need_convert = (ss_dump_array[9] & SS_MSB_FIRST) != 0;
@@ -629,6 +674,9 @@ void state_save_load_continue(void)
 			ss_entry *e;
 			for(e = m->instances[i]; e; e=e->next)
 				if(e->tag == ss_current_tag) {
+					UINT32 bytes = ss_size[e->type] * e->size;
+					if (!e->data || (UINT64)e->offset + bytes > ss_dump_size)
+						return 1;
 					if(e->type == SS_INT) {
 						int v;
 						v = ss_dump_array[e->offset]
@@ -638,10 +686,10 @@ void state_save_load_continue(void)
 						TRACE(logerror("    %s.%d.%s: %x..%x\n", m->name, i, e->name, e->offset, e->offset+3));
 						*(int *)(e->data) = v;
 					} else {
-						memcpy(e->data, ss_dump_array + e->offset, ss_size[e->type]*e->size);
+						memcpy(e->data, ss_dump_array + e->offset, bytes);
 						if (need_convert && ss_conv[e->type])
 							ss_conv[e->type](e->data, e->size);
-						TRACE(logerror("    %s.%d.%s: %x..%x\n", m->name, i, e->name, e->offset, e->offset+ss_size[e->type]*e->size-1));
+						TRACE(logerror("    %s.%d.%s: %x..%x\n", m->name, i, e->name, e->offset, e->offset+bytes-1));
 					}
 				}
 		}
@@ -656,6 +704,7 @@ void state_save_load_continue(void)
 		f = f->next;
 	}
 	TRACE(logerror("    %d functions called\n", count));
+	return 0;
 }
 
 void state_save_load_finish(void)
