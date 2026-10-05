@@ -252,7 +252,7 @@ def images():
     verified = []
     for name, target, title, stack in [
         ("MAMEoX", "MAMEoX.xbe", "MAMEoX Util (Don't Run)", "0xc0000"),
-        ("MAMEoXLauncher", "default.xbe", "MAMEoXtras 2026 Raiden2 + AB", "0x10000"),
+        ("MAMEoXLauncher", "default.xbe", "MAMEoXtras Decade", "0x10000"),
     ]:
         args = ["/NOLOGO", "/NOLIBWARN", "/FORMATUD", "/TESTID:0x4D414D46",
                 "/TESTNAME:" + title, "/STACK:" + stack,

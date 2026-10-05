@@ -70,7 +70,7 @@
         "stackSize": 65536,
         "noLibWarn": true,
         "limitMemory": false,
-        "testName": "MAMEoXtras 2026 RXDK Raiden2 AB",
+        "testName": "MAMEoXtras Decade",
         "titleImage": "../../source/Media/mox-icon.xpr",
         "defaultSaveImage": "../../source/Media/mox-icon.xpr",
         "testId": "0x4D414D46",
